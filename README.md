@@ -6,114 +6,97 @@
   New here? Read START-HERE.md first. Delete this comment when you are done.
 -->
 
-# App Name
+ # Harmony
 
-> One sentence: what this app does, and who it is for.
+ > Harmony is an offline-first practice assistant for rehearsing musicians. It
+ > scans and organises local audio tracks by tempo (BPM) and key, provides a
+ > lightweight player with synced lyrics, and tools to calibrate and verify
+ > automated analysis.
 
-**Live demo:** https://YOURUSERNAME.github.io/YOUR-REPO/ <!-- GitHub Pages is set up already; replace if you host elsewhere -->
-**Demo video:** `docs/demo.mp4` (link it here once it exists)
-**Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
-**Author:** Your Name
+ **Live demo:** https://Nathan-is-in-CS.github.io/Harmony/
+ **Demo video:** `docs/demo.mp4` (add when available)
+ **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
+ **Author:** (add your name here)
 
-This repository lives in the author's own GitHub account and is public on
-purpose. There is no `student.json` here and there should not be one: see
-`docs/06-security-and-privacy.md` for what a public repo means for secrets and
-personal data.
+ This repository contains the full source, documents and assets for the Harmony
+ project. The app is offline-first and keeps user data locally using Hive.
 
----
+ ## Screenshots
 
-## Screenshots
+ Add phone-sized screenshots to `docs/assets/` and replace these placeholders:
 
-Put two or three real screenshots at phone size in `docs/assets/`, then replace
-this paragraph with them:
+ | Library | Player | Settings |
+ | --- | --- | --- |
+ | ![Library](docs/assets/screen-library.png) | ![Player](docs/assets/screen-player.png) | ![Settings](docs/assets/screen-settings.png) |
 
-```markdown
-| Home | Detail | Add |
-| --- | --- | --- |
-| ![Home](docs/assets/screen-home.png) | ![Detail](docs/assets/screen-detail.png) | ![Add](docs/assets/screen-add.png) |
-```
+ ## What it does
 
-A repo without screenshots reads as abandoned, whatever the code says.
+ - Scans local audio files and displays a searchable track library.
+ - Shows BPM and key telemetry per track and a simple player with synced lyrics.
+ - Lets users calibrate and lock verified tempo/key values locally.
 
-## What it does
+ ## Built with
 
-Three to five bullets. What can a user actually do?
+ | | |
+ | --- | --- |
+ | Framework | Flutter (Dart) |
+ | Storage | Hive (hive, hive_flutter) — offline-first local data |
+ | Audio | audioplayers — playback and position tracking |
+ | Dev tools | device_preview — phone frame for web preview |
 
-- ...
-- ...
-- ...
+ ## Running locally
 
-## Built with
+ Requirements: Flutter SDK installed.
 
-| | |
-| --- | --- |
-| Framework | Flutter (Dart) |
-| State | `setState` / provider / riverpod (say which) |
-| Storage | shared_preferences / Hive / Drift / Firebase / Supabase / other |
-| Other packages | list the ones that matter, with a word on why |
+ ```bash
+ flutter pub get
+ flutter run -d web-server --web-port 8080
+ ```
 
-## Running it yourself
+ Open http://localhost:8080 to preview the app inside the device frame.
 
-```bash
-flutter pub get
-cp .env.example .env      # only if your app needs keys, see below
-flutter run -d web-server --web-port 8080
-```
+ ## Privacy and secrets
 
-Then open http://localhost:8080. Requires Flutter (run `flutter --version` and
-put yours here).
+ Harmony is an offline-only app by design. All user metadata (tracks, verified
+ values, settings) is stored locally on the device using Hive. There are no
+ external API keys or cloud services required for the core app. Sample data and
+ screenshots in this repository contain no real personal information.
 
-### Environment variables
+ ## Project documentation
 
-This project reads its configuration from a `.env` file that is **not** in the
-repository. Copy `.env.example`, fill in your own values, and never commit the
-result.
+ | Document | |
+ | --- | --- |
+ | [Proposal](docs/Proposalv2.md) | problem, users, scope, and data model |
+ | [Mockup and wireframes](docs/02-mockup.md) | visual mockups and screens |
+ | [Design system](docs/03-design-system.md) | palette, type scale and component guidance |
+ | [Weekly reports](docs/04-weekly-reports.md) | development progress (weekly) |
+ | [Demo video](docs/05-demo-video.md) | final demo recording |
+ | [Start here](START-HERE.md) | how this repo is organised and final checklist |
 
-| Variable | What it is | Where to get one |
-| --- | --- | --- |
-| `EXAMPLE_API_KEY` | ... | ... |
+ ## Status
 
-## Privacy and secrets
+ - Setup: package metadata and local storage scaffolding done.
+ - Library screen: Hive-backed sample list (see `lib/screens/library_screen.dart`).
+ - Next: Player UI, tap-tempo pad, and adapters for Hive models.
 
-Required section. Two or three honest sentences:
+ ## Branching & deployment
 
-- What personal data this app stores, if any, and where it goes.
-- Where the secrets live (`.env` locally, repository secrets in the deploy
-  workflow) and what protects the data on the service side (Firestore rules,
-  Supabase RLS, or "nothing leaves the device").
-- Confirm that all sample data, screenshots and the video contain **no real
-  personal information**.
+ - `main`: production-ready code and deployment target for GitHub Pages.
+ - `setup`: initial setup work (current branch).
+ - `feature/*`: feature branches (e.g. `feature/player`, `feature/storage`).
 
-## Project documentation
+ GitHub Pages is enabled for this repo; the live demo will appear at the link
+ shown above once `main` receives a deployable build.
 
-| Document | |
-| --- | --- |
-| [Proposal](docs/01-proposal.md) | the problem, the users, the scope |
-| [Mockup and wireframes](docs/02-mockup.md) | what it looks like, and the screen flow |
-| [Design system](docs/03-design-system.md) | colors, type, spacing, components |
-| [Weekly reports](docs/04-weekly-reports.md) | what happened each week |
-| [Demo video](docs/05-demo-video.md) | the recording and what it shows |
-| [Start here](START-HERE.md) | how this repo works (delete once you have read it) |
-| [Security and privacy](docs/06-security-and-privacy.md) | the checklist, filled in |
+ ## Credits
 
-## Status and what is next
+ - See `pubspec.yaml` for the main package dependencies.
 
-Be honest. What works, what is half done, what you would build next. An honest
-"known issues" section reads better than a claim the reader disproves in thirty
-seconds.
+ ## AI use
 
-## Credits
+ Assistant tools were used to scaffold project files and suggestions; final
+ decisions and code remain authored by the project owner.
 
-- Packages: see `pubspec.yaml`
-- Assets, icons, 3D models, sounds: name the author and the licence for each
-- People who helped, and how
+ ## Licence
 
-## AI use
-
-If you used AI tools while building this, say so in a sentence or two and say
-where. Honest disclosure is the standard in this course and increasingly outside
-it.
-
-## Licence
-
-MIT, see [LICENSE](LICENSE). Change it if you want different terms.
+ MIT, see [LICENSE](LICENSE).
