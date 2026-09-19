@@ -3,40 +3,42 @@
 This repository is public. Fill this in honestly and date it; it is checked as
 part of grading.
 
-**Last checked:** YYYY-MM-DD
+**Last checked:** 2026-09-17
 
 ## What this app stores
 
 | Data | Where it lives | Who can see it |
 | --- | --- | --- |
-| e.g. the user's task list | on the device (shared_preferences) | only that user |
+| Track metadata (title, bpm, keySignature, isUserVerified) | locally in Hive (`tracks_box`) | only the device user |
+| Lyric blobs | locally in Hive (`lyrics_box`) | only the device user |
+| App settings | locally in Hive (`settings_box`) | only the device user |
 
 ## Secrets
 
-- Values my app needs at run time: _(list the names, not the values)_
-- Where they live locally: `.env`, which is git-ignored
-- Where the deploy workflow gets them: repository secrets (Settings > Secrets
-  and variables > Actions; the walkthrough is on page 12 of
-  `content/extending-your-app/` in your workspace)
-- Anything my deployed web build carries that a visitor could read, and why that
-  is acceptable: _(a Supabase anon key protected by RLS, a Firebase config
-  protected by rules, or nothing)_
+- Values my app needs at run time: None for core functionality (Harmony is
+  designed as an offline-first app). If future cloud features are added the
+  keys will be documented here.
+- Where they live locally: `.env` is git-ignored (no secrets in the repo now).
+- Where the deploy workflow gets them: N/A (no deploy-time secrets required).
+- Anything my deployed web build carries that a visitor could read: none.
 
 ## What protects the data on the service side
 
-- Firestore rules / Supabase RLS policies: _(paste or summarize them; "test mode"
-  is not an answer)_
-- If nothing leaves the device, say that instead.
+- Nothing leaves the device for the current MVP. All user data (track
+  metadata, lyrics, and preferences) are stored locally using Hive and are not
+  transmitted to any remote service.
 
 ## Checklist
 
-- [ ] `.env` (or `env.json`) is in `.gitignore`, and `.env.example` is committed
-- [ ] `git log -p | grep -i "api_key\|secret\|password\|token"` finds nothing real
-- [ ] No service account file, keystore or `service_role` key anywhere in the repo
-- [ ] Security rules or RLS policies written and tested, not left open
-- [ ] No real personal data in sample data, screenshots or the video
-- [ ] No course or university credentials anywhere
-- [ ] Anyone whose data appears in a test was asked first
+- [x] `.env` (or `env.json`) is in `.gitignore`, and `.env.example` is committed
+- [x] `git log -p | grep -i "api_key\|secret\|password\|token"` finds nothing real
+- [x] No service account file, keystore or `service_role` key anywhere in the repo
+- [x] Security rules or RLS policies written and tested, not left open — N/A (no backend)
+- [x] No real personal data in sample data, screenshots or the video
+- [x] No course or university credentials anywhere
+- [x] Anyone whose data appears in a test was asked first — N/A
 
 If you found and revoked a key while doing this, say so here. Catching it is the
 right outcome, not an embarrassment.
+
+No keys were found in this repository during the review on 2026-09-17.

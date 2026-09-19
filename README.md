@@ -21,13 +21,12 @@
  This repository contains the full source, documents and assets for the Harmony
  project. The app is offline-first and keeps user data locally using Hive.
 
- ## Screenshots
+## Visuals
 
- Add phone-sized screenshots to `docs/assets/` and replace these placeholders:
+Design system and mockups are in `docs/`:
 
- | Library | Player | Settings |
- | --- | --- | --- |
- | ![Library](docs/assets/screen-library.png) | ![Player](docs/assets/screen-player.png) | ![Settings](docs/assets/screen-settings.png) |
+- [Harmony UI Design System image](docs/Harmony%20UI%20Design%20System.png)
+- [High-level mockup PDF](docs/High-level%20mockup%20Of%20Harmony.pdf)
 
  ## What it does
 
