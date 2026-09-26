@@ -7,7 +7,6 @@
 // Everything in this file is Module 4 and 5 material: StatelessWidget,
 // StatefulWidget, setState, Scaffold, AppBar, Column, Card, FilledButton.
 
-import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -18,13 +17,9 @@ Future<void> main() async {
   await Hive.initFlutter();
   await Hive.openBox('tracks_box');
   await Hive.openBox('audio_blobs');
+  await Hive.openBox('settings_box');
 
-  runApp(
-    DevicePreview(
-      enabled: true,
-      builder: (context) => const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -33,19 +28,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My Final Project',
+      title: 'Harmony',
       debugShowCheckedModeBanner: false,
 
-      // These two lines are what make the DevicePreview toolbar actually
-      // change the app. Keep them.
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
-
-      // Your design system starts here. One seed color generates a full
-      // Material palette; swap in your own and every screen follows.
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF6750A4)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1F2A44),
+          brightness: Brightness.light,
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF3F2EF),
+        appBarTheme: const AppBarTheme(
+          centerTitle: false,
+          backgroundColor: Color(0xFFE7E5E2),
+          foregroundColor: Colors.black,
+        ),
       ),
 
       home: const LibraryScreen(),

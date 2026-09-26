@@ -1,25 +1,21 @@
-<!--
-  This is your project's front page. Replace every placeholder below.
-  It is the first thing your instructor and any future employer will read, and
-  the live link in it is how your project gets opened for grading.
 
-  New here? Read START-HERE.md first. Delete this comment when you are done.
--->
+[![Made with AI](https://img.shields.io/badge/Made_with-AI_assistance-blue)](AI-USAGE.md)
 
- # Harmony
+# Harmony
 
- > Harmony is an offline-first practice assistant for rehearsing musicians. It
- > scans and organises local audio tracks by tempo (BPM) and key, provides a
- > lightweight player with synced lyrics, and tools to calibrate and verify
- > automated analysis.
+> Harmony is an Android-first local music library and player. It scans the
+> device for downloaded audio files on first launch, keeps a local library of
+> discovered tracks, and lets the user play real files stored on the device.
 
- **Live demo:** https://Nathan-is-in-CS.github.io/Harmony/
- **Demo video:** `docs/demo.mp4` (add when available)
- **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
- **Author:** (add your name here)
+**Live demo:** https://Nathan-is-in-CS.github.io/Harmony/
+**Demo video:** `docs/demo.mp4` (add when available)
+**Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
+**Author:** Harmony project team
 
- This repository contains the full source, documents and assets for the Harmony
- project. The app is offline-first and keeps user data locally using Hive.
+This repository contains the full source, documents and assets for the Harmony
+project. The app is offline-first and keeps user data locally using Hive.
+
+AI assistance used: GitHub Copilot was used throughout project setup, debugging, and document drafting; final code decisions and validation were done by the project owner.
 
 ## Visuals
 
@@ -30,9 +26,10 @@ Design system and mockups are in `docs/`:
 
  ## What it does
 
- - Scans local audio files and displays a searchable track library.
- - Shows BPM and key telemetry per track and a simple player with synced lyrics.
- - Lets users calibrate and lock verified tempo/key values locally.
+ - Scans the local device for available audio files on first launch.
+ - Builds a searchable music library from the user's downloaded tracks.
+ - Plays real local audio files directly from device storage.
+ - Stores local app settings and library state using Hive without cloud setup.
 
  ## Built with
 
@@ -40,8 +37,8 @@ Design system and mockups are in `docs/`:
  | --- | --- |
  | Framework | Flutter (Dart) |
  | Storage | Hive (hive, hive_flutter) — offline-first local data |
- | Audio | audioplayers — playback and position tracking |
- | Dev tools | device_preview — phone frame for web preview |
+ | Audio | audioplayers — local playback |
+ | Android access | permission_handler, path_provider |
 
  ## Running locally
 
@@ -49,10 +46,10 @@ Design system and mockups are in `docs/`:
 
  ```bash
  flutter pub get
- flutter run -d web-server --web-port 8080
+ flutter run -d emulator-5554
  ```
 
- Open http://localhost:8080 to preview the app inside the device frame.
+ For a local Android emulator test, run the app directly on an attached emulator.
 
  ## Privacy and secrets
 
@@ -74,9 +71,10 @@ Design system and mockups are in `docs/`:
 
  ## Status
 
- - Setup: package metadata and local storage scaffolding done.
- - Library screen: Hive-backed sample list (see `lib/screens/library_screen.dart`).
- - Next: Player UI, tap-tempo pad, and adapters for Hive models.
+ - Setup: project structure, Android permissions, and local storage are complete.
+ - Library screen: device scan and a local audio library are working.
+ - Player flow: local file playback and track selection are implemented.
+ - Current focus: polishing the local-library experience and validating real emulator audio playback.
 
  ## Branching & deployment
 

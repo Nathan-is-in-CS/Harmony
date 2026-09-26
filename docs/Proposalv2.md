@@ -18,11 +18,11 @@ Musicians working with rough demos, vocal stems, or live rehearsal recordings st
 | - | --- | --- | --- | --- |
 | 1 | **Track Library List & Search** | keep | `ListView.builder`, `TextField`, `Card`, `IconButton` | 5 hours |
 | 2 | **Player & Sync Lyric View** | keep | `SingleChildScrollView`, `Slider`, `Row`, `Column`, `Text` | 6 hours |
-| 3 | **Interactive Rhythm Tap Pad** | keep | `GestureDetector`, `Container`, `DateTime` math | 3 hours |
-| 4 | **Calibration Bottom Sheet** | keep | `showModalBottomSheet`, `DropdownButtonFormField`, `ElevatedButton` | 4 hours |
+| 3 | **Local Device Audio Scan** | keep | `permission_handler`, `path_provider`, file traversal | 4 hours |
+| 4 | **Track Metadata / Calibration View** | keep | `showModalBottomSheet`, `DropdownButtonFormField`, `ElevatedButton` | 4 hours |
 | 5 | **Settings & Cache Clear** | keep | `ListView`, `Switch`, `Slider`, `AlertDialog` | 3 hours |
 
-**Total Estimated Hours:** 21 hours
+**Total Estimated Hours:** 22 hours
 
 ---
 
@@ -48,11 +48,11 @@ Musicians working with rough demos, vocal stems, or live rehearsal recordings st
 
 ## NEW: One thing I want to add that the course did not teach
 
-- **Feature:** Audio Playback & Real-time Tap Tempo Math Engine (`audioplayers` + `path_provider`).
-- **Which package:** `audioplayers` (for background audio streaming and position tracking).
-- **Runs where you develop:** Yes (iOS, Android, macOS, Web).
-- **If it does not run on web:** Fallback to sample asset audio files loaded via standard HTML5 web audio nodes.
-- **Core feature or stretch goal:** Core feature (music playback and tempo tapping are central to the app's practice workflow).
+- **Feature:** Local Audio Playback & Device File Scanning (`audioplayers` + `path_provider` + Android storage permissions).
+- **Which package:** `audioplayers` (for local audio playback and position tracking).
+- **Runs where you develop:** Yes (Android-first, with local file access for device audio).
+- **If it does not run on web:** The production scope is focused on local device playback rather than web demo audio.
+- **Core feature or stretch goal:** Core feature (local playback and file discovery are central to the app's workflow).
 
 ---
 
@@ -80,20 +80,20 @@ Musicians working with rough demos, vocal stems, or live rehearsal recordings st
 ## Screens
 
 1. **Track Library Screen (Home Base):** Full file search, track statistics summary, and vertical song item list.
-2. **Player and Practice Workspace View:** Song telemetry indicators (BPM/Key), synchronized scrolling lyrics viewer, and interactive rhythm tap pad.
-3. **Edit Calibration Dialog (Bottom-Sheet Modal):** Dropdown property adjusters for base key and musical scale override with Save/Cancel triggers.
+2. **Player and Practice Workspace View:** Local audio playback controls, track details, and synced lyrics/notes viewer.
+3. **Edit Calibration Dialog (Bottom-Sheet Modal):** Dropdown property adjusters for track metadata and local verification state with Save/Cancel triggers.
 4. **Application Settings Screen:** Management options for cache clearing, display preferences, and analysis sliders.
 
 ---
 
 ## Risks, revised
 
-- **The risk I named last time (Audio/Local Storage Integration):** Still a risk, but manageable. Testing showed that reading local asset metadata in Flutter is smooth, though device file permission handling varies across platforms.
-  - *First step:* Implement fallback sample audio tracks inside `assets/` so the app works seamlessly even without storage permissions.
+- **The risk I named last time (Audio/Local Storage Integration):** Still a risk, but manageable. Testing showed that reading local audio files in Flutter is smooth, though device file permission handling varies across Android storage layouts.
+  - *First step:* Confirm the scan logic works with the app's first-start local device discovery flow.
   - *Target date:* Next Friday.
-- **A new risk I did not see before (Rhythm Tap Tempo Accuracy):** Tapping rapidly on screen triggers multiple micro-rebuilds, which could cause frame drops during live playback.
-  - *First step:* Isolate the tap pad state within a modular `StatefulWidget` or `ValueNotifier` to avoid re-rendering the entire parent player widget tree.
-  - *Target date:* Two weeks from today.
+- **A new risk I did not see before (Duplicate Local File Paths):** Android can expose the same file through multiple path aliases, leading to duplicate library entries.
+  - *First step:* Canonicalize and deduplicate file paths before saving tracks to Hive.
+  - *Target date:* This sprint.
 
 ---
 
@@ -104,5 +104,5 @@ Musicians working with rough demos, vocal stems, or live rehearsal recordings st
 
 | **App Scope** | Ambiguous multi-track organizer proposal | Precise 4-screen local practice utility | M4/M5 modules clarified exact screen costs and layout limits. |
 | **Data Persistence** | Undecided cloud backend | Offline-first local storage (`hive` / `shared_preferences`) | Offline speed and low setup overhead fit the timeline better than complex cloud databases. |
-| **Rhythm Mechanics** | Basic BPM display | Interactive Tap Rhythm Pad in Player workspace | Interactive tapping provides instant value for musicians verifying song tempos. |
-| **Calibration View** | Full dedicated edit page | Bottom-Sheet Modal (`showModalBottomSheet`) | Keeps the user in the context of the Player screen while tweaking song data. |
+| **Audio Workflow** | Basic file access and sample playback | Local device scan and playback from downloaded media | The app is centered on the user's actual device library rather than demo content. |
+| **Calibration View** | Full dedicated edit page | Bottom-Sheet Modal (`showModalBottomSheet`) | Keeps the user in the context of the Player screen while tweaking track metadata. |

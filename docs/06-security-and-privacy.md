@@ -3,7 +3,7 @@
 This repository is public. Fill this in honestly and date it; it is checked as
 part of grading.
 
-**Last checked:** 2026-09-17
+**Last checked:** 2026-09-26
 
 ## What this app stores
 
@@ -41,4 +41,4 @@ part of grading.
 If you found and revoked a key while doing this, say so here. Catching it is the
 right outcome, not an embarrassment.
 
-No keys were found in this repository during the review on 2026-09-17.
+No keys were found in this repository during the review on 2026-09-26.
