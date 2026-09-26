@@ -17,6 +17,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('tracks_box');
+  await Hive.openBox('audio_blobs');
 
   runApp(
     DevicePreview(
