@@ -53,8 +53,15 @@ class _LyricsImportSheetState extends State<LyricsImportSheet> {
 
   Future<void> _openSite(String url) async {
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    try {
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No web browser is available on this device.')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not open the external site: $e')));
+      }
     }
   }
 
