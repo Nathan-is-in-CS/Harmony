@@ -7,7 +7,7 @@
 > device for downloaded audio files on first launch, keeps a local library of
 > discovered tracks, and lets the user play real files stored on the device.
 
-**Live demo:** https://Nathan-is-in-CS.github.io/Harmony/
+**Android releases:** https://github.com/Nathan-is-in-CS/Harmony/releases
 **Demo video:** `docs/demo.mp4` (add when available)
 **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
 **Author:** Harmony project team
@@ -85,14 +85,20 @@ Design system and mockups are in `docs/`:
    implemented without forcing metadata entry.
  - Lyrics: optional import and display of synced lyrics are implemented.
 
- ## Branching & deployment
+ ## Branching & releases
 
- - `main`: production-ready code and deployment target for GitHub Pages.
- - `setup`: initial setup work (current branch).
- - `feature/*`: feature branches (e.g. `feature/player`, `feature/storage`).
+ - `main`: stable production-ready code.
+ - `feature/*`: feature branches for focused changes.
+ - Versioned Android APK/AAB files are published through GitHub Releases.
 
- GitHub Pages is enabled for this repo; the live demo will appear at the link
- shown above once `main` receives a deployable build.
+ To create a release, push a version tag such as `v1.0.0`. GitHub Actions will
+ run the checks, build the Android APK, and attach it to the generated release.
+ The current build uses the Android debug signing key for direct testing; a
+ private release keystore should be configured before distributing through the
+ Google Play Store.
+
+ GitHub Releases are the distribution channel for Android builds. Source code,
+ documentation, and release notes remain available in the repository.
 
  ## Credits
 

@@ -20,7 +20,7 @@ part of grading.
   keys will be documented here.
 - Where they live locally: `.env` is git-ignored (no secrets in the repo now).
 - Where the deploy workflow gets them: N/A (no deploy-time secrets required).
-- Anything my deployed web build carries that a visitor could read: none.
+- Android release packages contain no service credentials or private keys.
 
 ## What protects the data on the service side
 

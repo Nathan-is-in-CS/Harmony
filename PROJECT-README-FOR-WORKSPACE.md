@@ -3,7 +3,7 @@ Project README (copy this into your workspace `project/README.md`)
 
 Project: Harmony
 
-Live link: https://Nathan-is-in-CS.github.io/Harmony/
+Android releases: https://github.com/Nathan-is-in-CS/Harmony/releases
 
 Short description
 -----------------
@@ -33,7 +33,7 @@ Links
 -----
 
 - Project repo: https://github.com/Nathan-is-in-CS/Harmony
-- Live demo (GitHub Pages): https://Nathan-is-in-CS.github.io/Harmony/
+- Android releases: https://github.com/Nathan-is-in-CS/Harmony/releases
 
 Notes for the grader
 --------------------
@@ -44,7 +44,8 @@ Notes for the grader
 - The lyrics import sheet avoids narrow-screen button overflow and supports
   paste, LRC import, and external lyric sites.
 - Screens and design assets are inside the `docs/` folder.
-- The active development branch for the first feature is `feature/player`.
+- Development work is organized in `feature/*` branches and merged into
+  `main` for stable releases.
 
 Files submitted
 ---------------
