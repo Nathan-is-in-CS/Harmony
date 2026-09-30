@@ -45,5 +45,6 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: Harmony ${{ github.ref_name }}
+          prerelease: ${{ contains(github.ref_name, '-test') }}
           generate_release_notes: true
           files: build/app/outputs/flutter-apk/app-release.apk
