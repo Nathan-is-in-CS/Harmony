@@ -37,12 +37,30 @@ class _LyricsViewState extends State<LyricsView> {
     super.dispose();
   }
 
+  @override
+  void didUpdateWidget(covariant LyricsView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.trackId != widget.trackId) {
+      _loadLyrics();
+    }
+  }
+
   void _onTrackChange() {
-    // reload when track changes
-    _loadLyrics();
+    // Clear immediately. The parent will rebuild with the new trackId and
+    // didUpdateWidget will then load that track's lyrics.
+    _clearLyrics();
+  }
+
+  void _clearLyrics() {
+    _lines = [];
+    _synced = false;
+    _offsetMs = 0;
+    _activeIndex = -1;
+    if (mounted) setState(() {});
   }
 
   void _loadLyrics() {
+    _clearLyrics();
     final box = Hive.box('lyrics_box');
     final raw = box.get(widget.trackId);
     if (raw is Map) {
@@ -58,14 +76,8 @@ class _LyricsViewState extends State<LyricsView> {
         _offsetMs = offset;
       } else {
         // plain lyrics may be stored as 'plain'
-        _lines = [];
-        _synced = false;
         _offsetMs = offset;
       }
-    } else {
-      _lines = [];
-      _synced = false;
-      _offsetMs = 0;
     }
     _activeIndex = -1;
     if (mounted) setState(() {});
@@ -123,10 +135,6 @@ class _LyricsViewState extends State<LyricsView> {
         padding: const EdgeInsets.symmetric(vertical: 24.0),
         child: const Text('No synced lyrics available.'),
       );
-    }
-
-    if (!_synced && _lines.isEmpty) {
-      return const SizedBox.shrink();
     }
 
     return Column(
