@@ -471,7 +471,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
-                    value: selectedKey,
+                    initialValue: selectedKey,
                     decoration: const InputDecoration(labelText: 'Key Signature'),
                     hint: const Text('Select a key signature'),
                     items: _musicKeySignatures
