@@ -35,6 +35,9 @@ Links
 - Project repo: https://github.com/Nathan-is-in-CS/Harmony
 - Android releases: https://github.com/Nathan-is-in-CS/Harmony/releases
 
+Android builds are shared directly through GitHub Releases for community
+testing. Google Play distribution is not currently part of the project scope.
+
 Notes for the grader
 --------------------
 

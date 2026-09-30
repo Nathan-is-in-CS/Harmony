@@ -56,6 +56,14 @@ Design system and mockups are in `docs/`:
 
  For a local Android emulator test, run the app directly on an attached emulator.
 
+ ## Installing an Android build
+
+ Download the latest APK from the [GitHub Releases](https://github.com/Nathan-is-in-CS/Harmony/releases)
+ page and install it on an Android device. Android may require enabling
+ installation from this source in the device's security settings. Current
+ releases are community testing builds and are not distributed through Google
+ Play.
+
  ## Privacy and secrets
 
  Harmony is an offline-only app by design. All user metadata (tracks, BPM/key
@@ -103,6 +111,11 @@ Design system and mockups are in `docs/`:
  ## Credits
 
  - See `pubspec.yaml` for the main package dependencies.
+
+ ## Open source
+
+ Harmony is released under the MIT License. Contributions, bug reports, and
+ feature suggestions are welcome through GitHub Issues and Pull Requests.
 
  ## AI use
 
