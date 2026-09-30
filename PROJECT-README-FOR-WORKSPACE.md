@@ -12,6 +12,11 @@ Harmony is an offline-first practice assistant for musicians. It organises
 local audio files by tempo (BPM) and key, provides a small player with synced
 lyrics, and tools to calibrate and verify automated analysis locally.
 
+Song metadata is optional. When provided, BPM is entered by the user and key
+signatures are selected from a standard major/minor key-signature dropdown;
+newly discovered songs do not receive an automatic BPM or key placeholder.
+Lyrics can be imported from pasted text, LRC files, or supported external sites.
+
 How to run the project
 ----------------------
 
@@ -34,6 +39,10 @@ Notes for the grader
 --------------------
 
 - The app is offline-first and stores user data locally using Hive.
+- Audio playback, queue controls, and playback modes are available from the
+  player screen.
+- The lyrics import sheet avoids narrow-screen button overflow and supports
+  paste, LRC import, and external lyric sites.
 - Screens and design assets are inside the `docs/` folder.
 - The active development branch for the first feature is `feature/player`.
 

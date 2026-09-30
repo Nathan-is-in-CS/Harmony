@@ -6,7 +6,9 @@ plugins {
 
 android {
     namespace = "com.example.harmony"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android requires Android API 37 at compile time.
+    // This does not change the minimum or target Android version of the app.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

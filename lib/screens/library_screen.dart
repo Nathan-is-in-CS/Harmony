@@ -67,7 +67,7 @@ Widget _buildMiniPlayer(BuildContext context, HarmonyAudioController controller)
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              currentTrack.keySignature,
+                              currentTrack.keySignature.isEmpty ? 'Metadata not set' : currentTrack.keySignature,
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54),
                             ),
                           ],
@@ -117,7 +117,41 @@ class _LibraryScreenState extends State<LibraryScreen> {
     super.initState();
     _tracksBox = Hive.box('tracks_box');
     _settingsBox = Hive.box('settings_box');
+    _migrateTrackIdsIfNeeded();
     _runInitialDeviceScan();
+  }
+
+  Future<void> _migrateTrackIdsIfNeeded() async {
+    try {
+      final lyricsBox = Hive.box('lyrics_box');
+      for (var i = 0; i < _tracksBox.length; i++) {
+        final raw = _tracksBox.getAt(i);
+        if (raw is! Map) continue;
+        final map = Map<String, dynamic>.from(raw);
+        final track = TrackModel.fromMap(map);
+        if (track.path.isNotEmpty && track.id != track.path) {
+          final oldId = track.id;
+          final newId = track.path;
+          final updated = TrackModel(
+            id: newId,
+            title: track.title,
+            path: track.path,
+            bpm: track.bpm,
+            keySignature: track.keySignature,
+            isUserVerified: track.isUserVerified,
+          );
+          await _tracksBox.putAt(i, updated.toMap());
+          // migrate lyrics if present
+          if (lyricsBox.containsKey(oldId) && !lyricsBox.containsKey(newId)) {
+            final val = lyricsBox.get(oldId);
+            await lyricsBox.put(newId, val);
+            await lyricsBox.delete(oldId);
+          }
+        }
+      }
+    } catch (e) {
+      // migration best-effort; don't block app
+    }
   }
 
   @override
@@ -196,8 +230,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final alreadyScanned = _settingsBox.get('device_audio_scanned', defaultValue: false) as bool;
     if (alreadyScanned && _tracksBox.isNotEmpty) return;
 
-    if (_tracksBox.isNotEmpty) await _tracksBox.clear();
-
     final hasPermission = await _requestAudioPermission();
     if (!hasPermission) {
       await _settingsBox.put('device_audio_scanned', false);
@@ -265,6 +297,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
       final existing = TrackModel.fromMap(Map<String, dynamic>.from(raw));
       if (existing.id == track.id) {
         await _tracksBox.deleteAt(index);
+        // remove any associated lyrics
+        try {
+          final lyricsBox = Hive.box('lyrics_box');
+          if (lyricsBox.containsKey(track.id)) {
+            await lyricsBox.delete(track.id);
+          }
+        } catch (_) {}
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Removed ${track.title} from the library')),
@@ -335,12 +374,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
         final fileName = canonicalPath.replaceAll(RegExp(r'^.*[/\\]'), '');
         final title = fileName.replaceAll(RegExp(r'\.[^.]+$'), '');
+        final stableId = canonicalPath; // use canonical path as stable id
         final track = TrackModel(
-          id: canonicalPath.hashCode.toString(),
+          id: stableId,
           title: title.isEmpty ? 'Untitled track' : title,
           path: canonicalPath,
-          bpm: 120,
-          keySignature: 'Auto',
+          // Discovery only knows the file path. BPM and key must be entered
+          // by the user before this track has usable musical metadata.
+          bpm: 0,
+          keySignature: '',
           isUserVerified: false,
         );
 
@@ -480,7 +522,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${track.bpm.toStringAsFixed(0)} BPM • ${track.keySignature}'),
+                          Text(
+                            track.bpm > 0
+                                ? '${track.bpm.toStringAsFixed(0)} BPM • ${track.keySignature}'
+                                : 'BPM and key not set',
+                          ),
                           if (track.path.isNotEmpty) ...[
                             const SizedBox(height: 4),
                             Text(

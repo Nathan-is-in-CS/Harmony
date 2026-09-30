@@ -29,6 +29,11 @@ Design system and mockups are in `docs/`:
  - Scans the local device for available audio files on first launch.
  - Builds a searchable music library from the user's downloaded tracks.
  - Plays real local audio files directly from device storage.
+ - Lets users enter and edit each song's BPM and key signature locally. Key
+   editing uses a dropdown containing the standard major and minor signatures;
+   songs without metadata remain optional and are shown as not set.
+ - Supports synced lyric import from pasted text, LRC files, and external lyric
+   sites.
  - Stores local app settings and library state using Hive without cloud setup.
 
  ## Built with
@@ -53,8 +58,9 @@ Design system and mockups are in `docs/`:
 
  ## Privacy and secrets
 
- Harmony is an offline-only app by design. All user metadata (tracks, verified
- values, settings) is stored locally on the device using Hive. There are no
+ Harmony is an offline-only app by design. All user metadata (tracks, BPM/key
+ information, lyrics, verified values, and settings) is stored locally on the
+ device using Hive. There are no
  external API keys or cloud services required for the core app. Sample data and
  screenshots in this repository contain no real personal information.
 
@@ -73,8 +79,11 @@ Design system and mockups are in `docs/`:
 
  - Setup: project structure, Android permissions, and local storage are complete.
  - Library screen: device scan and a local audio library are working.
- - Player flow: local file playback and track selection are implemented.
- - Current focus: polishing the local-library experience and validating real emulator audio playback.
+ - Player flow: local file playback, track selection, playback modes, and
+   playback-state handling are implemented.
+ - Metadata: user-editable BPM and standard key-signature selection are
+   implemented without forcing metadata entry.
+ - Lyrics: optional import and display of synced lyrics are implemented.
 
  ## Branching & deployment
 

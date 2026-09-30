@@ -77,6 +77,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (shouldClear != true) return;
 
     await _tracksBox.clear();
+    // Do NOT clear lyrics_box: preserve user-entered lyrics across rescans
     await _settingsBox.put('device_audio_scanned', false);
     _refreshTrackStats();
 

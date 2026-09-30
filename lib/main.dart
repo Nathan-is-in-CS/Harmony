@@ -17,6 +17,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   await Hive.openBox('tracks_box');
   await Hive.openBox('audio_blobs');
+  await Hive.openBox('lyrics_box');
   await Hive.openBox('settings_box');
 
   runApp(const MyApp());

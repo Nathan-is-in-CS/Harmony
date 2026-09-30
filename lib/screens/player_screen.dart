@@ -3,9 +3,18 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'lyrics_import_sheet.dart';
+import '../src/lyrics/lyrics_view.dart';
 import '../models/track_model.dart';
 
 enum PlaybackMode { normal, shuffle, repeatAll, repeatOne }
+
+const _musicKeySignatures = [
+  'C major', 'G major', 'D major', 'A major', 'E major', 'B major', 'F# major', 'C# major',
+  'F major', 'Bb major', 'Eb major', 'Ab major', 'Db major', 'Gb major', 'Cb major',
+  'A minor', 'E minor', 'B minor', 'F# minor', 'C# minor', 'G# minor', 'D# minor', 'A# minor',
+  'D minor', 'G minor', 'C minor', 'F minor', 'Bb minor', 'Eb minor', 'Ab minor',
+];
 
 class HarmonyAudioController {
   HarmonyAudioController._();
@@ -24,6 +33,8 @@ class HarmonyAudioController {
 
   bool _isInitialized = false;
   Timer? _pollTimer;
+  DateTime? _manualStateGuardUntil;
+  bool? _manualPlayingState;
   final List<TrackModel> _baseQueue = [];
   final List<StreamSubscription> _subscriptions = [];
 
@@ -54,6 +65,17 @@ class HarmonyAudioController {
 
     _subscriptions.add(_player.onPlayerStateChanged.listen((state) {
       final playing = state == PlayerState.playing;
+
+      // audioplayers can deliver a stale state event after pause/resume,
+      // especially for BytesSource and DeviceFileSource. Do not let that
+      // event overwrite the state requested by the most recent user action.
+      final guardActive = _manualStateGuardUntil?.isAfter(DateTime.now()) ?? false;
+      if (guardActive && _manualPlayingState != playing) {
+        return;
+      }
+      _manualStateGuardUntil = null;
+      _manualPlayingState = null;
+
       isPlaying.value = playing;
       if (playing) {
         _startPolling();
@@ -67,8 +89,6 @@ class HarmonyAudioController {
     _subscriptions.add(_player.onPositionChanged.listen((p) => position.value = p));
     _subscriptions.add(_player.onDurationChanged.listen((d) => duration.value = d));
     _subscriptions.add(_player.onPlayerComplete.listen((_) {
-      isPlaying.value = false;
-      _stopPolling();
       position.value = Duration.zero;
       _advanceAfterCompletion();
     }));
@@ -88,6 +108,22 @@ class HarmonyAudioController {
   void _stopPolling() {
     _pollTimer?.cancel();
     _pollTimer = null;
+  }
+
+  void _setPlayingState(bool playing, {bool guardStaleEvent = false}) {
+    if (guardStaleEvent) {
+      _manualPlayingState = playing;
+      _manualStateGuardUntil = DateTime.now().add(const Duration(milliseconds: 750));
+    } else {
+      _manualPlayingState = null;
+      _manualStateGuardUntil = null;
+    }
+    isPlaying.value = playing;
+    if (playing) {
+      _startPolling();
+    } else {
+      _stopPolling();
+    }
   }
 
   void setQueue(List<TrackModel> tracks, {int startIndex = 0}) {
@@ -127,8 +163,7 @@ class HarmonyAudioController {
 
     if (track.path.isEmpty) {
       errorMessage.value = 'No audio file attached for this track.';
-      isPlaying.value = false;
-      _stopPolling();
+      _setPlayingState(false);
       return;
     }
 
@@ -160,20 +195,17 @@ class HarmonyAudioController {
         duration.value = maybeDuration;
       }
 
-      isPlaying.value = true;
-      _startPolling();
+      _setPlayingState(true);
     } catch (e) {
       errorMessage.value = e.toString();
-      isPlaying.value = false;
-      _stopPolling();
+      _setPlayingState(false);
     }
   }
 
   Future<void> togglePlay() async {
     if (isPlaying.value) {
       await _player.pause();
-      isPlaying.value = false;
-      _stopPolling();
+      _setPlayingState(false, guardStaleEvent: true);
       return;
     }
 
@@ -184,8 +216,7 @@ class HarmonyAudioController {
 
     if (_player.state == PlayerState.paused) {
       await _player.resume();
-      isPlaying.value = true;
-      _startPolling();
+      _setPlayingState(true, guardStaleEvent: true);
       return;
     }
 
@@ -194,14 +225,12 @@ class HarmonyAudioController {
 
   Future<void> pause() async {
     await _player.pause();
-    isPlaying.value = false;
-    _stopPolling();
+    _setPlayingState(false, guardStaleEvent: true);
   }
 
   Future<void> resume() async {
     await _player.resume();
-    isPlaying.value = true;
-    _startPolling();
+    _setPlayingState(true, guardStaleEvent: true);
   }
 
   Future<void> seek(Duration value) async {
@@ -219,8 +248,7 @@ class HarmonyAudioController {
       case PlaybackMode.repeatOne:
         await _player.seek(Duration.zero);
         await _player.resume();
-        isPlaying.value = true;
-        _startPolling();
+        _setPlayingState(true);
         return;
       case PlaybackMode.shuffle:
         final currentId = currentTrack.value?.id;
@@ -228,8 +256,7 @@ class HarmonyAudioController {
         if (available.isEmpty) {
           await _player.seek(Duration.zero);
           await _player.resume();
-          isPlaying.value = true;
-          _startPolling();
+          _setPlayingState(true);
           return;
         }
         final next = available[(available.length * DateTime.now().microsecondsSinceEpoch % available.length).abs()];
@@ -255,8 +282,7 @@ class HarmonyAudioController {
           await playTrack(next, sourceQueue: queue.value);
         } else {
           await _player.stop();
-          isPlaying.value = false;
-          _stopPolling();
+          _setPlayingState(false);
         }
     }
   }
@@ -361,6 +387,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _controller.currentTrack.addListener(_syncFromController);
     _controller.errorMessage.addListener(_syncFromController);
     _controller.playbackMode.addListener(_syncFromController);
+
   }
 
   Future<void> _togglePlay() async {
@@ -409,9 +436,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _showCalibrationSheet() async {
-    final bpmController = TextEditingController(text: _track.bpm.toStringAsFixed(0));
-    final keyController = TextEditingController(text: _track.keySignature);
-    bool verified = _track.isUserVerified;
+    final bpmController = TextEditingController(text: _track.bpm > 0 ? _track.bpm.toStringAsFixed(0) : '');
+    String? selectedKey = _musicKeySignatures.contains(_track.keySignature) ? _track.keySignature : null;
 
     final formKey = GlobalKey<FormState>();
 
@@ -430,32 +456,31 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Edit Calibration', style: Theme.of(ctx).textTheme.titleLarge),
+                  Text('Song Information', style: Theme.of(ctx).textTheme.titleLarge),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: bpmController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'BPM'),
+                    decoration: const InputDecoration(labelText: 'BPM', hintText: 'e.g. 120'),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Enter BPM';
                       final n = int.tryParse(v);
-                      if (n == null || n <= 0) return 'Enter a valid BPM';
+                      if (n == null || n < 1 || n > 300) return 'Enter a BPM from 1 to 300';
                       return null;
                     },
                   ),
                   const SizedBox(height: 8),
-                  TextFormField(
-                    controller: keyController,
+                  DropdownButtonFormField<String>(
+                    value: selectedKey,
                     decoration: const InputDecoration(labelText: 'Key Signature'),
+                    hint: const Text('Select a key signature'),
+                    items: _musicKeySignatures
+                        .map((key) => DropdownMenuItem<String>(value: key, child: Text(key)))
+                        .toList(),
+                    onChanged: (value) => selectedKey = value,
+                    validator: (value) => value == null ? 'Select a key signature' : null,
                   ),
                   const SizedBox(height: 8),
-                  CheckboxListTile(
-                    value: verified,
-                    onChanged: (v) => verified = v ?? false,
-                    title: const Text('Mark as verified'),
-                    controlAffinity: ListTileControlAffinity.leading,
-                  ),
-                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -463,9 +488,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: () async {
-                          if (formKey.currentState?.validate() ?? false) {
+                          if ((formKey.currentState?.validate() ?? false) && selectedKey != null) {
                             final newBpm = double.parse(bpmController.text);
-                            final newKey = keyController.text;
+                            final newKey = selectedKey!;
                             // update hive box record matching this track id
                             final box = Hive.box('tracks_box');
                             for (var i = 0; i < box.length; i++) {
@@ -477,11 +502,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                   path: _track.path,
                                   bpm: newBpm,
                                   keySignature: newKey,
-                                  isUserVerified: verified,
+                                  isUserVerified: _track.isUserVerified,
                                 );
                                 await box.putAt(i, updated.toMap());
                                 if (mounted) {
                                   _track = updated;
+                                  _controller.currentTrack.value = updated;
                                   setState(() {});
                                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Calibration saved')));
                                 }
@@ -505,6 +531,17 @@ class _PlayerScreenState extends State<PlayerScreen> {
     );
   }
 
+  Future<void> _showLyricsImport() async {
+    final result = await showModalBottomSheet<bool>(
+      context: context,
+      isScrollControlled: true,
+      builder: (_) => LyricsImportSheet(trackId: _track.id, title: _track.title, duration: _controller.duration.value),
+    );
+    if (result == true) {
+      setState(() {});
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final activeTrack = _controller.currentTrack.value ?? _track;
@@ -521,6 +558,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // existing UI continues below
+            // Insert Add Lyrics button
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _showLyricsImport,
+                  icon: const Icon(Icons.lyrics),
+                  label: const Text('Add lyrics'),
+                ),
+              ],
+            ),
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -544,7 +593,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         children: [
                           Text(activeTrack.title, style: Theme.of(context).textTheme.titleLarge),
                           const SizedBox(height: 6),
-                          Text('Key: ${activeTrack.keySignature} • ${activeTrack.bpm.toStringAsFixed(0)} BPM', style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black87)),
+                          Text(
+                            'Key: ${activeTrack.keySignature.isEmpty ? 'Not set' : activeTrack.keySignature} • ${activeTrack.bpm > 0 ? '${activeTrack.bpm.toStringAsFixed(0)} BPM' : 'BPM not set'}',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black87),
+                          ),
                         ],
                       ),
                     ),
@@ -625,11 +677,30 @@ class _PlayerScreenState extends State<PlayerScreen> {
                     Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text('BPM', style: Theme.of(context).textTheme.bodySmall),
                       const SizedBox(height: 6),
-                      Text(activeTrack.bpm.toStringAsFixed(0), style: Theme.of(context).textTheme.titleLarge),
+                      Text(activeTrack.bpm > 0 ? activeTrack.bpm.toStringAsFixed(0) : 'Not set', style: Theme.of(context).textTheme.titleLarge),
                     ]),
                     ElevatedButton.icon(onPressed: _showCalibrationSheet, icon: const Icon(Icons.tune), label: const Text('Edit'))
                   ],
                 ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            // Lyrics view
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 6),
+                  // Widget located in src/lyrics
+                  Builder(builder: (ctx) {
+                    // insert the LyricsView
+                    return Column(children: [
+                      const SizedBox(height: 8),
+                      LyricsView(trackId: activeTrack.id, title: activeTrack.title),
+                    ]);
+                  }),
+                ],
               ),
             ),
           ],
@@ -641,7 +712,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   IconData _playbackIcon(PlaybackMode mode) {
     switch (mode) {
       case PlaybackMode.normal:
-        return Icons.play_arrow_rounded;
+        return Icons.playlist_play_rounded;
       case PlaybackMode.shuffle:
         return Icons.shuffle_rounded;
       case PlaybackMode.repeatAll:
