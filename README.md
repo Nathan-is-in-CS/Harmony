@@ -1,119 +1,127 @@
-<!--
-  This is your project's front page. Replace every placeholder below.
-  It is the first thing your instructor and any future employer will read, and
-  the live link in it is how your project gets opened for grading.
 
-  New here? Read START-HERE.md first. Delete this comment when you are done.
--->
+[![Made with AI](https://img.shields.io/badge/Made_with-AI_assistance-blue)](docs/AI-USAGE.md)
 
-# App Name
+# Harmony
 
-> One sentence: what this app does, and who it is for.
+> Harmony is an Android-first local music library and player. It scans the
+> device for downloaded audio files on first launch, keeps a local library of
+> discovered tracks, and lets the user play real files stored on the device.
 
-**Live demo:** https://YOURUSERNAME.github.io/YOUR-REPO/ <!-- GitHub Pages is set up already; replace if you host elsewhere -->
-**Demo video:** `docs/demo.mp4` (link it here once it exists)
+**Android releases:** https://github.com/Nathan-is-in-CS/Harmony/releases
+**Demo video:** `docs/demo.mp4` (add when available)
 **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
-**Author:** Your Name
+**Author:** Harmony project team
 
-This repository lives in the author's own GitHub account and is public on
-purpose. There is no `student.json` here and there should not be one: see
-`docs/06-security-and-privacy.md` for what a public repo means for secrets and
-personal data.
+This repository contains the full source, documents and assets for the Harmony
+project. The app is offline-first and keeps user data locally using Hive.
 
----
+AI assistance used: GitHub Copilot was used throughout project setup, debugging, and document drafting; final code decisions and validation were done by the project owner.
 
-## Screenshots
+## Visuals
 
-Put two or three real screenshots at phone size in `docs/assets/`, then replace
-this paragraph with them:
+Design system and mockups are in `docs/`:
 
-```markdown
-| Home | Detail | Add |
-| --- | --- | --- |
-| ![Home](docs/assets/screen-home.png) | ![Detail](docs/assets/screen-detail.png) | ![Add](docs/assets/screen-add.png) |
-```
+- [Harmony UI Design System image](docs/Harmony%20UI%20Design%20System.png)
+- [High-level mockup PDF](docs/High-level%20mockup%20Of%20Harmony.pdf)
 
-A repo without screenshots reads as abandoned, whatever the code says.
+ ## What it does
 
-## What it does
+ - Scans the local device for available audio files on first launch.
+ - Builds a searchable music library from the user's downloaded tracks.
+ - Plays real local audio files directly from device storage.
+ - Lets users enter and edit each song's BPM and key signature locally. Key
+   editing uses a dropdown containing the standard major and minor signatures;
+   songs without metadata remain optional and are shown as not set.
+ - Supports synced lyric import from pasted text, LRC files, and external lyric
+   sites.
+ - Stores local app settings and library state using Hive without cloud setup.
 
-Three to five bullets. What can a user actually do?
+ ## Built with
 
-- ...
-- ...
-- ...
+ | | |
+ | --- | --- |
+ | Framework | Flutter (Dart) |
+ | Storage | Hive (hive, hive_flutter) — offline-first local data |
+ | Audio | audioplayers — local playback |
+ | Android access | permission_handler, path_provider |
 
-## Built with
+ ## Running locally
 
-| | |
-| --- | --- |
-| Framework | Flutter (Dart) |
-| State | `setState` / provider / riverpod (say which) |
-| Storage | shared_preferences / Hive / Drift / Firebase / Supabase / other |
-| Other packages | list the ones that matter, with a word on why |
+ Requirements: Flutter SDK installed.
 
-## Running it yourself
+ ```bash
+ flutter pub get
+ flutter run -d emulator-5554
+ ```
 
-```bash
-flutter pub get
-cp .env.example .env      # only if your app needs keys, see below
-flutter run -d web-server --web-port 8080
-```
+ For a local Android emulator test, run the app directly on an attached emulator.
 
-Then open http://localhost:8080. Requires Flutter (run `flutter --version` and
-put yours here).
+ ## Installing an Android build
 
-### Environment variables
+ Download the latest APK from the [GitHub Releases](https://github.com/Nathan-is-in-CS/Harmony/releases)
+ page and install it on an Android device. Android may require enabling
+ installation from this source in the device's security settings. Current
+ releases are community testing builds and are not distributed through Google
+ Play.
 
-This project reads its configuration from a `.env` file that is **not** in the
-repository. Copy `.env.example`, fill in your own values, and never commit the
-result.
+ ## Privacy and secrets
 
-| Variable | What it is | Where to get one |
-| --- | --- | --- |
-| `EXAMPLE_API_KEY` | ... | ... |
+ Harmony is an offline-only app by design. All user metadata (tracks, BPM/key
+ information, lyrics, verified values, and settings) is stored locally on the
+ device using Hive. There are no
+ external API keys or cloud services required for the core app. Sample data and
+ screenshots in this repository contain no real personal information.
 
-## Privacy and secrets
+ ## Project documentation
 
-Required section. Two or three honest sentences:
+ | Document | |
+ | --- | --- |
+ | [Proposal](docs/Proposalv2.md) | problem, users, scope, and data model |
+ | [Mockup and wireframes](docs/02-mockup.md) | visual mockups and screens |
+ | [Design system](docs/03-design-system.md) | palette, type scale and component guidance |
+ | [Weekly reports](docs/04-weekly-reports.md) | development progress (weekly) |
+ | [Demo video](docs/05-demo-video.md) | final demo recording |
+ | [Start here](START-HERE.md) | how this repo is organised and final checklist |
 
-- What personal data this app stores, if any, and where it goes.
-- Where the secrets live (`.env` locally, repository secrets in the deploy
-  workflow) and what protects the data on the service side (Firestore rules,
-  Supabase RLS, or "nothing leaves the device").
-- Confirm that all sample data, screenshots and the video contain **no real
-  personal information**.
+ ## Status
 
-## Project documentation
+ - Setup: project structure, Android permissions, and local storage are complete.
+ - Library screen: device scan and a local audio library are working.
+ - Player flow: local file playback, track selection, playback modes, and
+   playback-state handling are implemented.
+ - Metadata: user-editable BPM and standard key-signature selection are
+   implemented without forcing metadata entry.
+ - Lyrics: optional import and display of synced lyrics are implemented.
 
-| Document | |
-| --- | --- |
-| [Proposal](docs/01-proposal.md) | the problem, the users, the scope |
-| [Mockup and wireframes](docs/02-mockup.md) | what it looks like, and the screen flow |
-| [Design system](docs/03-design-system.md) | colors, type, spacing, components |
-| [Weekly reports](docs/04-weekly-reports.md) | what happened each week |
-| [Demo video](docs/05-demo-video.md) | the recording and what it shows |
-| [Start here](START-HERE.md) | how this repo works (delete once you have read it) |
-| [Security and privacy](docs/06-security-and-privacy.md) | the checklist, filled in |
+ ## Branching & releases
 
-## Status and what is next
+ - `main`: stable production-ready code.
+ - `feature/*`: feature branches for focused changes.
+ - Versioned Android APK/AAB files are published through GitHub Releases.
 
-Be honest. What works, what is half done, what you would build next. An honest
-"known issues" section reads better than a claim the reader disproves in thirty
-seconds.
+ To create a release, push a version tag such as `v1.0.0`. GitHub Actions will
+ run the checks, build the Android APK, and attach it to the generated release.
+ The current build uses the Android debug signing key for direct testing; a
+ private release keystore should be configured before distributing through the
+ Google Play Store.
 
-## Credits
+ GitHub Releases are the distribution channel for Android builds. Source code,
+ documentation, and release notes remain available in the repository.
 
-- Packages: see `pubspec.yaml`
-- Assets, icons, 3D models, sounds: name the author and the licence for each
-- People who helped, and how
+ ## Credits
 
-## AI use
+ - See `pubspec.yaml` for the main package dependencies.
 
-If you used AI tools while building this, say so in a sentence or two and say
-where. Honest disclosure is the standard in this course and increasingly outside
-it.
+ ## Open source
 
-## Licence
+ Harmony is released under the MIT License. Contributions, bug reports, and
+ feature suggestions are welcome through GitHub Issues and Pull Requests.
 
-MIT, see [LICENSE](LICENSE). Change it if you want different terms.
+ ## AI use
+
+ Assistant tools were used to scaffold project files and suggestions; final
+ decisions and code remain authored by the project owner.
+
+ ## Licence
+
+ MIT, see [LICENSE](LICENSE).
