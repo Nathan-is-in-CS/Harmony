@@ -80,5 +80,9 @@ void main() {
     expect(find.text('Track Library'), findsOneWidget);
     // Sample data populates the library when empty in the setup.
     expect(find.text('Autumn Leaves'), findsOneWidget);
+
+    // Dispose the widget tree before tearDownAll closes Hive. LibraryScreen
+    // listens to the Hive box and must release that listener first.
+    await tester.pumpWidget(const SizedBox.shrink());
   });
 }
