@@ -23,15 +23,6 @@ Future<void> _ensureHiveBoxes() async {
   if (!Hive.isBoxOpen('lyrics_box')) await Hive.openBox('lyrics_box');
 }
 
-Future<void> _cleanupHive() async {
-  await Hive.close();
-  if (_hiveTestDir != null && _hiveTestDir!.existsSync()) {
-    try {
-      _hiveTestDir!.deleteSync(recursive: true);
-    } catch (_) {}
-  }
-}
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -68,18 +59,18 @@ void main() {
   });
 
   tearDownAll(() async {
-    await _cleanupHive();
     final binding = TestDefaultBinaryMessengerBinding.instance;
     final pathProvChannel = const MethodChannel('plugins.flutter.io/path_provider');
     binding.defaultBinaryMessenger.setMockMethodCallHandler(pathProvChannel, null);
   });
 
   testWidgets('home screen builds and disposes cleanly', (tester) async {
-    // Build the app. The home screen is the Library screen.
-    await tester.pumpWidget(const MyApp());
+    addTearDown(() async {
+      // Dispose the widget tree before the test isolate exits. LibraryScreen
+      // listens to the Hive box and must release that listener first.
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
 
-    // Dispose the widget tree before tearDownAll closes Hive. LibraryScreen
-    // listens to the Hive box and must release that listener first.
-    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pumpWidget(const MyApp());
   });
 }
