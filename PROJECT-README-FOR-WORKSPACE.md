@@ -10,7 +10,7 @@ Short description
 
 Harmony is an offline-first practice assistant for musicians. It organises
 local audio files by tempo (BPM) and key, provides a small player with synced
-lyrics, and tools to calibrate and verify automated analysis locally.
+lyrics, and lets users edit song information locally.
 
 Song metadata is optional. When provided, BPM is entered by the user and key
 signatures are selected from a standard major/minor key-signature dropdown;
@@ -20,14 +20,19 @@ Lyrics can be imported from pasted text, LRC files, or supported external sites.
 How to run the project
 ----------------------
 
-From the project repository root:
+From the project repository root, for an Android emulator or connected device:
 
 ```bash
 flutter pub get
-flutter run -d web-server --web-port 8080
+flutter run
 ```
 
-Open http://localhost:8080 to preview the app inside a phone frame.
+For automated checks:
+
+```bash
+flutter analyze --no-fatal-infos
+flutter test
+```
 
 Links
 -----
@@ -60,7 +65,9 @@ Files submitted
 How I tested the app
 --------------------
 
-- Ran `flutter analyze` and `flutter run -d web-server` locally.
+- The GitHub release workflow runs `flutter analyze --no-fatal-infos` and
+  `flutter test` before building an APK.
+- The Android APK has been tested on an emulator with local audio files.
 
 Notes about privacy
 -------------------

@@ -14,6 +14,8 @@
 
 This repository contains the full source, documents and assets for the Harmony
 project. The app is offline-first and keeps user data locally using Hive.
+External lyric sites are optional links opened in the device browser; core
+library, playback, metadata, and lyric storage remain local.
 
 AI assistance used: GitHub Copilot was used throughout project setup, debugging, and document drafting; final code decisions and validation were done by the project owner.
 
@@ -88,10 +90,13 @@ Design system and mockups are in `docs/`:
  - Setup: project structure, Android permissions, and local storage are complete.
  - Library screen: device scan and a local audio library are working.
  - Player flow: local file playback, track selection, playback modes, and
-   playback-state handling are implemented.
+   playback-state handling are implemented, including randomized shuffle.
  - Metadata: user-editable BPM and standard key-signature selection are
    implemented without forcing metadata entry.
- - Lyrics: optional import and display of synced lyrics are implemented.
+ - Lyrics: optional import and display of synced lyrics are implemented, with
+   lyrics reset correctly when tracks change.
+ - Distribution: Android APK test releases are built through GitHub Actions and
+   published through GitHub Releases.
 
  ## Branching & releases
 
