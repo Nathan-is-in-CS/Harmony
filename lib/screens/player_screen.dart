@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -37,6 +38,7 @@ class HarmonyAudioController {
   bool? _manualPlayingState;
   final List<TrackModel> _baseQueue = [];
   final List<StreamSubscription> _subscriptions = [];
+  final Random _random = Random();
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -259,7 +261,7 @@ class HarmonyAudioController {
           _setPlayingState(true);
           return;
         }
-        final next = available[(available.length * DateTime.now().microsecondsSinceEpoch % available.length).abs()];
+        final next = available[_random.nextInt(available.length)];
         final nextIndex = queue.value.indexWhere((t) => t.id == next.id);
         if (nextIndex >= 0) {
           currentIndex.value = nextIndex;
