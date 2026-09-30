@@ -1,5 +1,5 @@
 
-[![Made with AI](https://img.shields.io/badge/Made_with-AI_assistance-blue)](AI-USAGE.md)
+[![Made with AI](https://img.shields.io/badge/Made_with-AI_assistance-blue)](docs/AI-USAGE.md)
 
 # Harmony
 
