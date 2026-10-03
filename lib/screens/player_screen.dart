@@ -147,6 +147,14 @@ class HarmonyAudioController {
     currentTrack.value = queue.value[safeIndex];
   }
 
+  void updateTrack(TrackModel updated) {
+    queue.value = [for (final track in queue.value) track.id == updated.id ? updated : track];
+    for (var i = 0; i < _baseQueue.length; i++) {
+      if (_baseQueue[i].id == updated.id) _baseQueue[i] = updated;
+    }
+    if (currentTrack.value?.id == updated.id) currentTrack.value = updated;
+  }
+
   Future<void> playTrack(TrackModel track, {List<TrackModel>? sourceQueue}) async {
     await initialize();
     errorMessage.value = null;
@@ -364,8 +372,8 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  late TrackModel _track;
   final HarmonyAudioController _controller = HarmonyAudioController.instance;
+  TrackModel get _track => _controller.currentTrack.value ?? widget.track;
 
   void _syncFromController() {
     if (!mounted) return;
@@ -375,9 +383,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
-    _track = widget.track;
-    if (_controller.currentTrack.value == null || _controller.currentTrack.value!.id != _track.id) {
-      _controller.currentTrack.value = _track;
+    if (_controller.currentTrack.value == null || _controller.currentTrack.value!.id != widget.track.id) {
+      _controller.currentTrack.value = widget.track;
       _controller.position.value = Duration.zero;
       _controller.duration.value = Duration.zero;
     }
@@ -394,7 +401,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _togglePlay() async {
     if (_controller.currentTrack.value == null) {
-      _controller.currentTrack.value = _track;
+      _controller.currentTrack.value = widget.track;
     }
     await _controller.togglePlay();
     _syncFromController();
@@ -438,8 +445,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _showCalibrationSheet() async {
-    final bpmController = TextEditingController(text: _track.bpm > 0 ? _track.bpm.toStringAsFixed(0) : '');
-    String? selectedKey = _musicKeySignatures.contains(_track.keySignature) ? _track.keySignature : null;
+    final track = _track;
+    final bpmController = TextEditingController(text: track.bpm > 0 ? track.bpm.toStringAsFixed(0) : '');
+    String? selectedKey = _musicKeySignatures.contains(track.keySignature) ? track.keySignature : null;
 
     final formKey = GlobalKey<FormState>();
 
@@ -497,19 +505,18 @@ class _PlayerScreenState extends State<PlayerScreen> {
                             final box = Hive.box('tracks_box');
                             for (var i = 0; i < box.length; i++) {
                               final raw = box.getAt(i) as Map<dynamic, dynamic>;
-                              if ((raw['id'] as String?) == _track.id) {
+                              if ((raw['id'] as String?) == track.id) {
                                 final updated = TrackModel(
-                                  id: _track.id,
-                                  title: _track.title,
-                                  path: _track.path,
+                                  id: track.id,
+                                  title: track.title,
+                                  path: track.path,
                                   bpm: newBpm,
                                   keySignature: newKey,
-                                  isUserVerified: _track.isUserVerified,
+                                  isUserVerified: track.isUserVerified,
                                 );
                                 await box.putAt(i, updated.toMap());
+                                _controller.updateTrack(updated);
                                 if (mounted) {
-                                  _track = updated;
-                                  _controller.currentTrack.value = updated;
                                   setState(() {});
                                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Calibration saved')));
                                 }
@@ -534,10 +541,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   Future<void> _showLyricsImport() async {
+    final track = _track;
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => LyricsImportSheet(trackId: _track.id, title: _track.title, duration: _controller.duration.value),
+      builder: (_) => LyricsImportSheet(trackId: track.id, title: track.title, duration: _controller.duration.value),
     );
     if (result == true) {
       setState(() {});

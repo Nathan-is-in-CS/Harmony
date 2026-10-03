@@ -46,8 +46,7 @@ class _LyricsViewState extends State<LyricsView> {
   }
 
   void _onTrackChange() {
-    // Clear immediately. The parent will rebuild with the new trackId and
-    // didUpdateWidget will then load that track's lyrics.
+    if (_controller.currentTrack.value?.id == widget.trackId) return;
     _clearLyrics();
   }
 

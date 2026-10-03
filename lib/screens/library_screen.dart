@@ -67,7 +67,13 @@ Widget _buildMiniPlayer(BuildContext context, HarmonyAudioController controller)
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              currentTrack.keySignature.isEmpty ? 'Metadata not set' : currentTrack.keySignature,
+                              () {
+                                final parts = <String>[
+                                  if (currentTrack.keySignature.isNotEmpty) currentTrack.keySignature,
+                                  if (currentTrack.bpm > 0) '${currentTrack.bpm.toStringAsFixed(0)} BPM',
+                                ];
+                                return parts.isEmpty ? 'Metadata not set' : parts.join(' • ');
+                              }(),
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54),
                             ),
                           ],
