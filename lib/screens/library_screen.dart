@@ -400,7 +400,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       await _settingsBox.put('device_audio_scanned', true);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(added > 0 ? 'Analyzed $added new audio file(s)' : 'Device audio already up to date')),
+          SnackBar(content: Text(added > 0 ? 'Found $added new audio file(s)' : 'Device audio already up to date')),
         );
       }
       if (mounted) setState(() {});
@@ -434,7 +434,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             icon: _isScanning
                 ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
                 : const Icon(Icons.search_rounded),
-            tooltip: 'Analyze device audio',
+            tooltip: 'Scan device audio',
           ),
           IconButton(
             onPressed: () {
@@ -497,7 +497,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           const SizedBox(height: 8),
                           Text(
                             _isScanning
-                                ? 'Harmony is analyzing your device storage for downloaded audio files.'
+                                ? 'Harmony is scanning your device storage for downloaded audio files.'
                                 : 'Tap below to scan your device for stored music and start your local library.',
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
@@ -506,7 +506,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           FilledButton.icon(
                             onPressed: _isScanning ? null : () => _scanDeviceAudioFiles(includeExisting: true),
                             icon: const Icon(Icons.search_rounded),
-                            label: Text(_isScanning ? 'Scanning…' : 'Analyze device audio'),
+                            label: Text(_isScanning ? 'Scanning…' : 'Scan device audio'),
                           ),
                         ],
                       ),

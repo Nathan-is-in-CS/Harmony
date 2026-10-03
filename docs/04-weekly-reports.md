@@ -6,6 +6,29 @@ final reflection almost write itself.
 
 ---
 
+## Week 3 (3 Oct 2026 to 3 Oct 2026)
+
+**Done this week**
+- removed the obsolete AI stat and AI suggestions setting from the Settings screen
+- updated the proposal, README, and AI-use documentation to describe manual BPM/key entry and user verification only
+- reviewed the changes against the project's manual-only scope and conventions
+
+**In progress**
+- final project hand-off and demo evidence
+
+**Blocked or stuck on**
+- none recorded for this documentation pass
+
+**Decisions made, and why**
+- kept the scope manual-only because the actual app does not provide AI or automatic key/BPM analysis
+
+**Hours spent, roughly:** 1-2
+
+**Next week I will:**
+- complete final hand-off materials and demo preparation
+
+---
+
 ## Week 1 (19 Sep 2026 to 25 Sep 2026)
 
 **Done this week**

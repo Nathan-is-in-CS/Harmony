@@ -1,6 +1,6 @@
 # AI usage
 
-This project used GitHub Copilot as an assistant during setup, debugging, and documentation support. The work below is recorded honestly: the AI accelerated the work, but the final product was shaped by project decisions and manual corrections.
+This project used GitHub Copilot during the earlier setup and documentation work. Claude Code was used only during Week 3 as a prompting and validation assistant for coding, debugging, and code suggestions. The work below is recorded honestly: these tools accelerated parts of the work, but the final product was shaped by project decisions, manual corrections, and validation by the project owner. Harmony itself has no AI or automatic key/BPM analysis features.
 
 ## 1. How I used AI
 
@@ -52,6 +52,13 @@ This project used GitHub Copilot as an assistant during setup, debugging, and do
 - What I kept/changed: I adapted the wording to the actual project status, kept the findings honest, and inserted the final badge, AI credit, and security review details.
 - Commit: `4fe7afd` — Update:Docs
 
+### Entry 7 — manual-only workflow and documentation correction
+- Date: 2026-10-03
+- Tool: Claude Code
+- What I asked for: “Update the Harmony documentation to match the removal of AI and automatic analysis features, and record that BPM and key are entered and verified manually.”
+- What it gave back: prompts, validation feedback, debugging help, and code suggestions for the Settings cleanup and related documentation updates.
+- What I kept/changed: I kept the changes minimal, removed the obsolete AI stat and suggestions setting from the Settings flow, changed scan wording that implied automatic analysis, and documented the manual-only workflow. No AI or automatic analysis feature was added.
+
 ## 2. Where the AI got it wrong
 
 ### Issue 1 — it suggested demo/sample music instead of real local audio
@@ -72,6 +79,10 @@ This project used GitHub Copilot as an assistant during setup, debugging, and do
 - What I did instead: I forced the slider to use the actual player values and reset the progress when a track changed, which fixed the mismatch.
 - Commit: `3d5892e` — feat: add initial player screen and local playback flow
 
+### Issue 4 — earlier wording implied automatic metadata analysis
+- What was wrong: earlier Settings and proposal wording referred to an AI stat, AI suggestions, analysis sliders, and automatic key/BPM analysis even though Harmony's actual workflow is manual.
+- What I did instead: I removed the obsolete Settings controls and updated the documentation and scan labels to state that users enter BPM and key values themselves, then mark them as verified.
+
 ## 3. Who wrote what
 
 ### Parts I wrote myself
@@ -81,10 +92,12 @@ This project used GitHub Copilot as an assistant during setup, debugging, and do
 | `lib/screens/player_screen.dart` | `3d5892e` | I wrote the playback UX and the coordination between the track view, queue controls, and the audio state. I kept the controls simple and connected to the actual player so the UI reflects device playback instead of stale assumptions. |
 | `lib/main.dart` | `b768605` and later edits | I made the app bootstrap decisions and selected the app flow and initialization strategy for the project. The entry point is mine because it is the path that launches the Harmony experience. |
 | `docs/04-weekly-reports.md` | `4fe7afd` | I wrote the weekly project record on a real timeline so the project history reflects what happened, not what I expected to happen. |
+| `lib/screens/settings_screen.dart` | working tree cleanup | I removed the obsolete AI stat and suggestions toggle, preserved the remaining local settings, and cleared the stale Hive key. |
+| `docs/Proposalv2.md` and project README/docs | working tree cleanup | I updated the project description to match manual BPM/key entry and user verification, with no automatic analysis feature. |
 
 ### One piece of AI-written code I understand best
 | File | Commit | Why I kept it, and how I checked it |
 | --- | --- | --- |
 | `lib/src/platform_io_nonweb.dart` | `3d5892e` | This file was scaffolded with AI help to handle local file scanning and audio extension filtering. I kept the structure because it was a good foundation for Android device traversal, but I reviewed and adjusted the actual rules so it respects the real app requirements, blocks protected directories, and avoids duplicates. |
 
-This is a fair split: the AI accelerated the initial code generation and architecture suggestions, while the final design choices, tuning, and corrections were made by me to match the real device-first app requirement.
+This is a fair split: GitHub Copilot assisted with earlier code generation and documentation, while Claude Code was used only in Week 3 for prompting, validation, debugging, and code suggestions. The final design choices, manual-only metadata workflow, tuning, and corrections were made by me to match the real device-first app requirement.

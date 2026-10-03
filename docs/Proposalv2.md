@@ -4,7 +4,7 @@
 Harmony
 
 ## The problem, in one sentence
-Musicians working with rough demos, vocal stems, or live rehearsal recordings struggle to organize tracks by key/tempo telemetry and manually verify automatic audio analysis without messy physical ledgers.
+Musicians working with rough demos, vocal stems, or live rehearsal recordings struggle to organize tracks by key and tempo, and to record and verify that information themselves, without messy physical ledgers.
 
 ## Who is this for
 - **Who specifically uses this?** Rehearsing musicians, gigging bandleaders, and indie songwriters managing collections of unreleased local audio demos and stems.
@@ -82,7 +82,7 @@ Musicians working with rough demos, vocal stems, or live rehearsal recordings st
 1. **Track Library Screen (Home Base):** Full file search, track statistics summary, and vertical song item list.
 2. **Player and Practice Workspace View:** Local audio playback controls, track details, and synced lyrics/notes viewer.
 3. **Edit Calibration Dialog (Bottom-Sheet Modal):** Dropdown property adjusters for track metadata and local verification state with Save/Cancel triggers.
-4. **Application Settings Screen:** Management options for cache clearing, display preferences, and analysis sliders.
+4. **Application Settings Screen:** Management options for cache clearing, scan reset, and display preferences.
 
 ---
 
@@ -106,3 +106,4 @@ Musicians working with rough demos, vocal stems, or live rehearsal recordings st
 | **Data Persistence** | Undecided cloud backend | Offline-first local storage (`hive` / `shared_preferences`) | Offline speed and low setup overhead fit the timeline better than complex cloud databases. |
 | **Audio Workflow** | Basic file access and sample playback | Local device scan and playback from downloaded media | The app is centered on the user's actual device library rather than demo content. |
 | **Calibration View** | Full dedicated edit page | Bottom-Sheet Modal (`showModalBottomSheet`) | Keeps the user in the context of the Player screen while tweaking track metadata. |
+| **Analysis features** | Settings included analysis sliders and implied automatic key/BPM analysis | Manual key/BPM entry plus user verification only; no AI or automatic analysis | Keeps the scope achievable and matches what the app actually does. |

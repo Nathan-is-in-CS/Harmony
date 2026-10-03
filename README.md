@@ -17,7 +17,7 @@ project. The app is offline-first and keeps user data locally using Hive.
 External lyric sites are optional links opened in the device browser; core
 library, playback, metadata, and lyric storage remain local.
 
-AI assistance used: GitHub Copilot was used throughout project setup, debugging, and document drafting; final code decisions and validation were done by the project owner.
+AI assistance used: GitHub Copilot was used during earlier project setup and documentation. Claude Code was used only during Week 3 for prompting, validation, debugging, and code suggestions; final code decisions and validation were done by the project owner.
 
 ## Visuals
 
@@ -33,7 +33,9 @@ Design system and mockups are in `docs/`:
  - Plays real local audio files directly from device storage.
  - Lets users enter and edit each song's BPM and key signature locally. Key
    editing uses a dropdown containing the standard major and minor signatures;
-   songs without metadata remain optional and are shown as not set.
+   songs without metadata remain optional and are shown as not set. BPM and key
+   are entered manually and marked as verified by the user; the app does not
+   perform automatic key/BPM analysis.
  - Supports synced lyric import from pasted text, LRC files, and external lyric
    sites.
  - Stores local app settings and library state using Hive without cloud setup.
@@ -124,8 +126,10 @@ Design system and mockups are in `docs/`:
 
  ## AI use
 
- Assistant tools were used to scaffold project files and suggestions; final
- decisions and code remain authored by the project owner.
+GitHub Copilot was used for earlier project scaffolding and documentation.
+Claude Code was used only during Week 3 for prompting, validation, debugging,
+and code suggestions; final decisions and code remain authored and validated
+by the project owner.
 
  ## Licence
 

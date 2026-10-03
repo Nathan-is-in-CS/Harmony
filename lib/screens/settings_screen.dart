@@ -16,7 +16,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _verifiedCount = 0;
   int _pendingCount = 0;
   bool _autoLockVerified = true;
-  bool _keepAiSuggestionsVisible = false;
   bool _preserveOfflineCache = true;
   bool _compactTrackRows = true;
 
@@ -25,6 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     _settingsBox = Hive.box('settings_box');
     _tracksBox = Hive.box('tracks_box');
+    _settingsBox.delete('keep_ai_suggestions_visible');
     _tracksBox.listenable().addListener(_refreshTrackStats);
     _loadSettings();
     _refreshTrackStats();
@@ -51,7 +51,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _loadSettings() {
     setState(() {
       _autoLockVerified = _settingsBox.get('auto_lock_verified', defaultValue: true) as bool;
-      _keepAiSuggestionsVisible = _settingsBox.get('keep_ai_suggestions_visible', defaultValue: false) as bool;
       _preserveOfflineCache = _settingsBox.get('preserve_offline_cache', defaultValue: true) as bool;
       _compactTrackRows = _settingsBox.get('compact_track_rows', defaultValue: true) as bool;
     });
@@ -194,10 +193,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Expanded(
                     child: _SettingsStatBox(label: 'PENDING', value: _pendingCount.toString()),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _SettingsStatBox(label: 'AI', value: '0'),
-                  ),
                 ],
               ),
               const SizedBox(height: 24),
@@ -251,16 +246,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (value) async {
                   setState(() => _autoLockVerified = value);
                   await _saveSetting('auto_lock_verified', value);
-                },
-              ),
-              const SizedBox(height: 12),
-              _ToggleRow(
-                label: 'Keep AI suggestions\nvisible',
-                sublabel: 'Show calculated values beside manual edits.',
-                value: _keepAiSuggestionsVisible,
-                onChanged: (value) async {
-                  setState(() => _keepAiSuggestionsVisible = value);
-                  await _saveSetting('keep_ai_suggestions_visible', value);
                 },
               ),
               const SizedBox(height: 12),
