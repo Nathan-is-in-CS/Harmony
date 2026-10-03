@@ -40,6 +40,9 @@ jobs:
       - name: Build release APK
         run: flutter build apk --release
 
+      - name: Rename APK for GitHub Release
+        run: cp build/app/outputs/flutter-apk/app-release.apk Harmony-${{ github.ref_name }}.apk
+
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -47,4 +50,4 @@ jobs:
           name: Harmony ${{ github.ref_name }}
           prerelease: ${{ contains(github.ref_name, '-test') }}
           generate_release_notes: true
-          files: build/app/outputs/flutter-apk/app-release.apk
+          files: Harmony-${{ github.ref_name }}.apk

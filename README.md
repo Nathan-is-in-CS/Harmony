@@ -97,6 +97,8 @@ Design system and mockups are in `docs/`:
    implemented without forcing metadata entry.
  - Lyrics: optional import and display of synced lyrics are implemented, with
    lyrics reset correctly when tracks change.
+ - UI: Harmony Design System v2 is implemented across Library, Player, Settings,
+   calibration, lyrics, and mini-player surfaces with reusable theme widgets.
  - Distribution: Android APK test releases are built through GitHub Actions and
    published through GitHub Releases.
 

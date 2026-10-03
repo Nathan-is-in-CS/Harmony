@@ -56,7 +56,7 @@ This project used GitHub Copilot during the earlier setup and documentation work
 - Date: 2026-10-03
 - Tool: Claude Code
 - What I asked for: “Update the Harmony documentation to match the removal of AI and automatic analysis features, and record that BPM and key are entered and verified manually.”
-- What it gave back: prompts, validation feedback, debugging help, and code suggestions for the Settings cleanup and related documentation updates.
+- What it gave back: prompts, validation feedback, debugging help, and code suggestions for the Settings cleanup, UI design-system implementation, and related documentation updates.
 - What I kept/changed: I kept the changes minimal, removed the obsolete AI stat and suggestions setting from the Settings flow, changed scan wording that implied automatic analysis, and documented the manual-only workflow. No AI or automatic analysis feature was added.
 
 ## 2. Where the AI got it wrong

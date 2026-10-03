@@ -82,7 +82,7 @@ Widget _buildMiniPlayer(
                           ],
                         ),
                       ),
-                      IconButton.filled(
+                      IconButton(
                         onPressed: () async {
                           if (isPlaying) {
                             await controller.pause();
@@ -92,6 +92,12 @@ Widget _buildMiniPlayer(
                         },
                         icon: Icon(
                           isPlaying ? Icons.pause : Icons.play_arrow_rounded,
+                        ),
+                        style: IconButton.styleFrom(
+                          backgroundColor: harmonySurface,
+                          foregroundColor: harmonyPrimary,
+                          side: const BorderSide(color: harmonyBorder),
+                          shape: const CircleBorder(),
                         ),
                       ),
                     ],

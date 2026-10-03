@@ -12,6 +12,8 @@ final reflection almost write itself.
 - removed the obsolete AI stat and AI suggestions setting from the Settings screen
 - updated the proposal, README, and AI-use documentation to describe manual BPM/key entry and user verification only
 - reviewed the changes against the project's manual-only scope and conventions
+- refined the mini-player play/pause control with a light outlined circular style while preserving its playback behavior
+- completed the major Harmony Design System v2 UI update across the main screens and reusable widgets
 
 **In progress**
 - final project hand-off and demo evidence

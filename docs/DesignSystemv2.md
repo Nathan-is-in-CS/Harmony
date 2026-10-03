@@ -138,10 +138,11 @@ Every repeated piece from the wireframes/mockups is listed with its file path an
 
 | Component                  | File                                    | Constructor parameters                                      | Appears on                     |
 |----------------------------|-----------------------------------------|-------------------------------------------------------------|--------------------------------|
-| HeaderBar                  | `lib/widgets/header_bar.dart`           | `String title`, `VoidCallback? onBack`, `VoidCallback? onAction` | Library, Player, Settings     |
-| RoundedMetricCard          | `lib/widgets/rounded_metric_card.dart`  | `String label`, `String value`, `String? subtitle`          | Player, Settings, Library rows |
-| PrimaryOutlinedButton      | `lib/widgets/primary_outlined_button.dart` | `String label`, `VoidCallback? onPressed`                 | Library, Player, Settings, Modals |
-| FormDropdownSelector       | `lib/widgets/form_dropdown_selector.dart` | `String value`, `List<String> options`, `ValueChanged<String> onChanged` | Calibration Modal, Settings |
+| `HarmonyHeaderBar`         | `lib/widgets/harmony_widgets.dart`     | `String title`, `Widget? leading`, `Widget? trailing` | Library, Player, Settings |
+| `HarmonyCard`              | `lib/widgets/harmony_widgets.dart`     | `Widget child`, optional padding | Library, Player, Settings |
+| `HarmonyMetricCard`        | `lib/widgets/harmony_widgets.dart`     | `String label`, `String value`, optional caption | Player |
+| `HarmonyStatusBadge`       | `lib/widgets/harmony_widgets.dart`     | `HarmonyStatusVariant variant` | Library rows |
+| `HarmonySectionLabel`      | `lib/widgets/harmony_widgets.dart`     | `String text` | All redesigned screens |
 
 **Rules followed:**
 - Components take data and callbacks, never `setState`.
@@ -217,7 +218,7 @@ final appTheme = ThemeData(
 | Type scale    | Named styles with sizes/weights | Mapped to Flutter `TextTheme` slots                  | So every `Text` widget can use `Theme.of(context).textTheme.…` by name        |
 | Spacing       | 8 / 16 px rules                 | Named `AppSpacing` constants                         | One place to change the entire grid                                           |
 | Components    | Visual descriptions only        | File paths + constructor parameters                  | Turns drawings into buildable widgets that take data + callbacks              |
-| Theme file    | Did not exist                   | Complete `lib/theme.dart` ready to paste             | Single source of truth for day-one project setup                              |
+| Theme file    | Did not exist                   | Complete `lib/theme/harmony_theme.dart` implementation | Single source of truth for the current app UI |
 
 All decisions were confirmed against the original monochromatic wireframe intent and the screens that actually appear in the Harmony wireframes (Library, Player, Settings, Calibration Modal).
 ```
