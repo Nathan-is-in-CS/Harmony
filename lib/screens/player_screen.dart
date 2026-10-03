@@ -298,6 +298,28 @@ class HarmonyAudioController {
   }
 
   Future<void> previousTrack() async {
+    if (playbackMode.value == PlaybackMode.shuffle) {
+      if (queue.value.isEmpty) return;
+
+      final currentId = currentTrack.value?.id;
+      final available = queue.value.where((track) => track.id != currentId).toList();
+      if (available.isEmpty) {
+        await _player.seek(Duration.zero);
+        await _player.resume();
+        _setPlayingState(true);
+        return;
+      }
+
+      final previous = available[_random.nextInt(available.length)];
+      final previousIndex = queue.value.indexWhere((track) => track.id == previous.id);
+      if (previousIndex >= 0) {
+        currentIndex.value = previousIndex;
+        currentTrack.value = previous;
+        await playTrack(previous, sourceQueue: queue.value);
+      }
+      return;
+    }
+
     if (position.value > const Duration(seconds: 3)) {
       await _player.seek(Duration.zero);
       position.value = Duration.zero;
