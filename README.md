@@ -8,7 +8,7 @@
 **Android releases:** https://github.com/Nathan-is-in-CS/Harmony/releases
 **Demo video:** `docs/demo.mp4` (add when available)
 **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
-**Author:** Harmony project team
+**Author:** Nathan-is-in-Cs
 
 This repository contains the full source, documents and assets for the Harmony
 project. The app is offline-first and keeps user data locally using Hive.
