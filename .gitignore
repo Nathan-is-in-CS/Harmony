@@ -13,6 +13,23 @@ google-services.json.bak
 .packages
 build/
 flutter_test_output.txt
+coverage/
+*.log
+
+# Android/iOS release artifacts
+*.apk
+*.aab
+*.ipa
+
+# Temporary files
+*.tmp
+*.temp
+
+# Additional signing and certificate files
+*.p12
+*.pem
+*.cer
+
 # Note: pubspec.lock IS committed for an app. It pins your exact package
 # versions so your build is the same on your laptop and on the CI runner.
 .flutter-plugins

@@ -1,6 +1,4 @@
 
-[![Made with AI](https://img.shields.io/badge/Made_with-AI_assistance-blue)](docs/AI-USAGE.md)
-
 # Harmony
 
 > Harmony is an Android-first local music library and player. It scans the
@@ -26,7 +24,7 @@ Design system and mockups are in `docs/`:
 - [Harmony UI Design System image](docs/Harmony%20UI%20Design%20System.png)
 - [High-level mockup PDF](docs/High-level%20mockup%20Of%20Harmony.pdf)
 
- ## What it does
+# What it does
 
  - Scans the local device for available audio files on first launch.
  - Builds a searchable music library from the user's downloaded tracks.
@@ -40,7 +38,7 @@ Design system and mockups are in `docs/`:
    sites.
  - Stores local app settings and library state using Hive without cloud setup.
 
- ## Built with
+# Built with
 
  | | |
  | --- | --- |
@@ -49,7 +47,7 @@ Design system and mockups are in `docs/`:
  | Audio | audioplayers — local playback |
  | Android access | permission_handler, path_provider |
 
- ## Running locally
+# Running locally
 
  Requirements: Flutter SDK installed.
 
@@ -60,7 +58,7 @@ Design system and mockups are in `docs/`:
 
  For a local Android emulator test, run the app directly on an attached emulator.
 
- ## Installing an Android build
+# Installing an Android build
 
  Download the latest APK from the [GitHub Releases](https://github.com/Nathan-is-in-CS/Harmony/releases)
  page and install it on an Android device. Android may require enabling
@@ -68,7 +66,7 @@ Design system and mockups are in `docs/`:
  releases are community testing builds and are not distributed through Google
  Play.
 
- ## Privacy and secrets
+# Privacy and secrets
 
  Harmony is an offline-only app by design. All user metadata (tracks, BPM/key
  information, lyrics, verified values, and settings) is stored locally on the
@@ -76,7 +74,7 @@ Design system and mockups are in `docs/`:
  external API keys or cloud services required for the core app. Sample data and
  screenshots in this repository contain no real personal information.
 
- ## Project documentation
+# Project documentation
 
  | Document | |
  | --- | --- |
@@ -85,9 +83,8 @@ Design system and mockups are in `docs/`:
  | [Design system](docs/03-design-system.md) | palette, type scale and component guidance |
  | [Weekly reports](docs/04-weekly-reports.md) | development progress (weekly) |
  | [Demo video](docs/05-demo-video.md) | final demo recording |
- | [Start here](START-HERE.md) | how this repo is organised and final checklist |
 
- ## Status
+# Status
 
  - Setup: project structure, Android permissions, and local storage are complete.
  - Library screen: device scan and a local audio library are working.
@@ -102,11 +99,11 @@ Design system and mockups are in `docs/`:
  - Distribution: Android APK test releases are built through GitHub Actions and
    published through GitHub Releases.
 
- ## Branching & releases
+# Branching & releases
 
  - `main`: stable production-ready code.
  - `feature/*`: feature branches for focused changes.
- - Versioned Android APK/AAB files are published through GitHub Releases.
+ - Versioned Android APK files are published through GitHub Releases.
 
  To create a release, push a version tag such as `v1.0.0`. GitHub Actions will
  run the checks, build the Android APK, and attach it to the generated release.
@@ -117,22 +114,22 @@ Design system and mockups are in `docs/`:
  GitHub Releases are the distribution channel for Android builds. Source code,
  documentation, and release notes remain available in the repository.
 
- ## Credits
+# Credits
 
  - See `pubspec.yaml` for the main package dependencies.
 
- ## Open source
+# Open source
 
  Harmony is released under the MIT License. Contributions, bug reports, and
  feature suggestions are welcome through GitHub Issues and Pull Requests.
 
- ## AI use
+# AI use
 
 GitHub Copilot was used for earlier project scaffolding and documentation.
 Claude Code was used only during Week 3 for prompting, validation, debugging,
 and code suggestions; final decisions and code remain authored and validated
 by the project owner.
 
- ## Licence
+# Licence
 
  MIT, see [LICENSE](LICENSE).

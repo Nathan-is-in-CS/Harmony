@@ -7,6 +7,18 @@ homepage: https://Nathan-is-in-CS.github.io/Harmony/
 publish_to: "none"
 version: 1.0.0+1
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icon/harmony_icon.png
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: assets/icon/harmony_icon_foreground.png
+  web:
+    generate: true
+    image_path: assets/icon/harmony_icon.png
+    background_color: "#FFFFFF"
+    theme_color: "#FFFFFF"
+
 environment:
   sdk: ^3.8.0
 
@@ -29,6 +41,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -38,3 +51,4 @@ flutter:
   assets:
     - docs/assets/
     - assets/
+    - assets/icon/
