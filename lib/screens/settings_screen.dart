@@ -17,7 +17,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _pendingCount = 0;
   bool _autoLockVerified = true;
   bool _preserveOfflineCache = true;
-  bool _compactTrackRows = true;
 
   @override
   void initState() {
@@ -25,6 +24,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _settingsBox = Hive.box('settings_box');
     _tracksBox = Hive.box('tracks_box');
     _settingsBox.delete('keep_ai_suggestions_visible');
+    _settingsBox.delete('compact_track_rows');
     _tracksBox.listenable().addListener(_refreshTrackStats);
     _loadSettings();
     _refreshTrackStats();
@@ -52,7 +52,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _autoLockVerified = _settingsBox.get('auto_lock_verified', defaultValue: true) as bool;
       _preserveOfflineCache = _settingsBox.get('preserve_offline_cache', defaultValue: true) as bool;
-      _compactTrackRows = _settingsBox.get('compact_track_rows', defaultValue: true) as bool;
     });
   }
 
@@ -134,7 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 18),
               const Text(
-                'LOCAL STORAGE • ANALYSIS • DISPLAY',
+                'SYNC • BEHAVIOR',
                 style: TextStyle(fontSize: 16, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.black87),
               ),
               const SizedBox(height: 18),
@@ -197,20 +196,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 24),
               const Text(
-                'STORAGE & SYNC',
+                'SYNC',
                 style: TextStyle(fontSize: 18, letterSpacing: 1.5, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 12),
-              _StorageRow(
-                icon: Icons.storage,
-                title: 'Device cache',
-                subtitle: '248 MB stored locally',
-                trailing: const Icon(Icons.chevron_right),
-              ),
-              const SizedBox(height: 8),
-              _StorageRow(
+              _SyncRow(
                 icon: Icons.upload_file,
-                title: 'Export analysis bundle',
+                title: 'Export verified metadata',
                 subtitle: 'Share verified metadata',
                 trailing: const Icon(Icons.chevron_right),
               ),
@@ -256,20 +248,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 onChanged: (value) async {
                   setState(() => _preserveOfflineCache = value);
                   await _saveSetting('preserve_offline_cache', value);
-                },
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'DISPLAY PREFERENCES',
-                style: TextStyle(fontSize: 18, letterSpacing: 1.5, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 12),
-              _ToggleRow(
-                label: 'Compact track rows',
-                value: _compactTrackRows,
-                onChanged: (value) async {
-                  setState(() => _compactTrackRows = value);
-                  await _saveSetting('compact_track_rows', value);
                 },
               ),
             ],
@@ -331,13 +309,13 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
-class _StorageRow extends StatelessWidget {
+class _SyncRow extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
   final Widget trailing;
 
-  const _StorageRow({
+  const _SyncRow({
     required this.icon,
     required this.title,
     required this.subtitle,

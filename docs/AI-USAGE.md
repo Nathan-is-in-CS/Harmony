@@ -92,7 +92,7 @@ This project used GitHub Copilot during the earlier setup and documentation work
 | `lib/screens/player_screen.dart` | `3d5892e` | I wrote the playback UX and the coordination between the track view, queue controls, and the audio state. I kept the controls simple and connected to the actual player so the UI reflects device playback instead of stale assumptions. |
 | `lib/main.dart` | `b768605` and later edits | I made the app bootstrap decisions and selected the app flow and initialization strategy for the project. The entry point is mine because it is the path that launches the Harmony experience. |
 | `docs/04-weekly-reports.md` | `4fe7afd` | I wrote the weekly project record on a real timeline so the project history reflects what happened, not what I expected to happen. |
-| `lib/screens/settings_screen.dart` | working tree cleanup | I removed the obsolete AI stat and suggestions toggle, preserved the remaining local settings, and cleared the stale Hive key. |
+| `lib/screens/settings_screen.dart` | working tree cleanup | I removed obsolete AI and non-functional settings, preserved the remaining local settings and metadata export area, and cleared stale Hive keys. |
 | `docs/Proposalv2.md` and project README/docs | working tree cleanup | I updated the project description to match manual BPM/key entry and user verification, with no automatic analysis feature. |
 
 ### One piece of AI-written code I understand best
