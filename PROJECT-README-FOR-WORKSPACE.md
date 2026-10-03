@@ -40,8 +40,8 @@ Links
 - Project repo: https://github.com/Nathan-is-in-CS/Harmony
 - Android releases: https://github.com/Nathan-is-in-CS/Harmony/releases
 
-Android builds are shared directly through GitHub Releases for community
-testing. Google Play distribution is not currently part of the project scope.
+The official v1.0.0 Android build is shared through GitHub Releases. Google Play
+distribution is not currently part of the project scope.
 
 Notes for the grader
 --------------------
@@ -68,6 +68,8 @@ How I tested the app
 - The GitHub release workflow runs `flutter analyze --no-fatal-infos` and
   `flutter test` before building an APK.
 - The Android APK has been tested on an emulator with local audio files.
+- The v1.0.0 release includes generated Android and web launcher icons from the
+  Harmony app icon assets.
 
 Notes about privacy
 -------------------

@@ -17,7 +17,6 @@
 <p align="center">
   <a href="#about">About</a> •
   <a href="#features">Features</a> •
-  <a href="#screenshots">Screenshots</a> •
   <a href="#download">Download</a> •
   <a href="#whats-new">What's New</a>
 </p>
@@ -51,7 +50,7 @@ the core Harmony experience available without cloud setup.
 ## Download
 
 <p align="center">
-  <a href="[https://github.com/Nathan-is-in-CS/Harmony/releases/download/v1.0.0/Harmony-v1.0.0.apk]">
+  <a href="https://github.com/Nathan-is-in-CS/Harmony/releases/download/v1.0.0/Harmony-v1.0.0.apk">
     <strong>Download the official Harmony v1.0.0 APK</strong>
   </a>
 </p>
@@ -100,7 +99,7 @@ the core Harmony experience available without cloud setup.
 ## Developers
 
 <p align="center">
-  <strong>Nathan-is-in-Cs</strong><br>
+  <strong><a href="https://github.com/Nathan-is-in-CS">Nathan-is-in-CS</a></strong>
 </p>
 
 ## Closing

@@ -6,6 +6,30 @@ final reflection almost write itself.
 
 ---
 
+## Week 4 (4 Oct 2026 to 4 Oct 2026)
+
+**Done this week**
+- added Harmony launcher icon assets and generated Android and web icons
+- updated the Android app label to `Harmony`
+- added the custom v1.0.0 release description and connected it to the GitHub Actions release workflow
+- published the official Harmony v1.0.0 major-release tag and APK workflow
+
+**In progress**
+- none recorded for the v1.0.0 launch
+
+**Blocked or stuck on**
+- iOS icon generation remains unavailable because the repository does not contain an iOS platform directory
+
+**Decisions made, and why**
+- kept the official release Android-focused because the project currently contains Android and web platform files, but no iOS platform directory
+
+**Hours spent, roughly:** not recorded
+
+**Next week I will:**
+- gather post-release feedback and prepare future maintenance updates
+
+---
+
 ## Week 3 (3 Oct 2026 to 3 Oct 2026)
 
 **Done this week**

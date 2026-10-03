@@ -63,8 +63,8 @@ Design system and mockups are in `docs/`:
  Download the latest APK from the [GitHub Releases](https://github.com/Nathan-is-in-CS/Harmony/releases)
  page and install it on an Android device. Android may require enabling
  installation from this source in the device's security settings. Current
- releases are community testing builds and are not distributed through Google
- Play.
+ the v1.0.0 build is the official major release and is not distributed through
+ Google Play.
 
 # Privacy and secrets
 
@@ -83,6 +83,7 @@ Design system and mockups are in `docs/`:
  | [Design system](docs/03-design-system.md) | palette, type scale and component guidance |
  | [Weekly reports](docs/04-weekly-reports.md) | development progress (weekly) |
  | [Demo video](docs/05-demo-video.md) | final demo recording |
+ | [v1.0.0 release notes](docs/release-v1.0.0.md) | official launch details and installation notes |
 
 # Status
 
@@ -96,8 +97,8 @@ Design system and mockups are in `docs/`:
    lyrics reset correctly when tracks change.
  - UI: Harmony Design System v2 is implemented across Library, Player, Settings,
    calibration, lyrics, and mini-player surfaces with reusable theme widgets.
- - Distribution: Android APK test releases are built through GitHub Actions and
-   published through GitHub Releases.
+ - Distribution: the official v1.0.0 Android APK is built through GitHub Actions
+   and published through GitHub Releases.
 
 # Branching & releases
 
@@ -107,9 +108,8 @@ Design system and mockups are in `docs/`:
 
  To create a release, push a version tag such as `v1.0.0`. GitHub Actions will
  run the checks, build the Android APK, and attach it to the generated release.
- The current build uses the Android debug signing key for direct testing; a
- private release keystore should be configured before distributing through the
- Google Play Store.
+ The v1.0.0 build uses the Android debug signing key; a private release keystore
+ should be configured before distributing through the Google Play Store.
 
  GitHub Releases are the distribution channel for Android builds. Source code,
  documentation, and release notes remain available in the repository.
