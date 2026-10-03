@@ -5,12 +5,18 @@ import 'package:file_picker/file_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../src/lyrics/lrc_parser.dart';
+import '../theme/harmony_theme.dart';
 
 class LyricsImportSheet extends StatefulWidget {
   final String trackId;
   final String title;
   final Duration duration;
-  const LyricsImportSheet({super.key, required this.trackId, required this.title, required this.duration});
+  const LyricsImportSheet({
+    super.key,
+    required this.trackId,
+    required this.title,
+    required this.duration,
+  });
 
   @override
   State<LyricsImportSheet> createState() => _LyricsImportSheetState();
@@ -37,7 +43,10 @@ class _LyricsImportSheetState extends State<LyricsImportSheet> {
 
   Future<void> _importFile() async {
     try {
-      final files = await FilePicker.pickFiles(type: FileType.custom, allowedExtensions: ['lrc', 'txt']);
+      final files = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['lrc', 'txt'],
+      );
       if (files.isEmpty) return;
       final path = files.single.path;
       if (path == null) return;
@@ -47,20 +56,31 @@ class _LyricsImportSheetState extends State<LyricsImportSheet> {
       setState(() => _controller.text = content);
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to read file: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to read file: $e')));
     }
   }
 
   Future<void> _openSite(String url) async {
     final uri = Uri.parse(url);
     try {
-      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
       if (!launched && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('No web browser is available on this device.')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No web browser is available on this device.'),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Could not open the external site: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not open the external site: $e')),
+        );
       }
     }
   }
@@ -70,10 +90,22 @@ class _LyricsImportSheetState extends State<LyricsImportSheet> {
     final parsed = parseLrc(content);
     final box = Hive.box('lyrics_box');
     if (parsed.lines.isEmpty) {
-      await box.put(widget.trackId, {'lines': [], 'synced': false, 'offset': 0, 'plain': content});
+      await box.put(widget.trackId, {
+        'lines': [],
+        'synced': false,
+        'offset': 0,
+        'plain': content,
+      });
     } else {
-      final serial = parsed.lines.map((l) => {'timeMs': l.timeMs, 'text': l.text}).toList();
-      await box.put(widget.trackId, {'lines': serial, 'synced': true, 'offset': parsed.offsetMs, 'plain': content});
+      final serial = parsed.lines
+          .map((l) => {'timeMs': l.timeMs, 'text': l.text})
+          .toList();
+      await box.put(widget.trackId, {
+        'lines': serial,
+        'synced': true,
+        'offset': parsed.offsetMs,
+        'plain': content,
+      });
     }
     if (mounted) Navigator.of(context).pop(true);
   }
@@ -81,43 +113,67 @@ class _LyricsImportSheetState extends State<LyricsImportSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SizedBox(
         height: MediaQuery.of(context).size.height * 0.8,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(s16),
               child: Row(
                 children: [
-                  Expanded(child: Text('Add lyrics for: ${widget.title} (${widget.duration.inSeconds}s)')),
-                  IconButton(onPressed: () => Navigator.of(context).pop(false), icon: const Icon(Icons.close)),
+                  Expanded(
+                    child: Text(
+                      'Add lyrics for: ${widget.title} (${widget.duration.inSeconds}s)',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    icon: const Icon(Icons.close),
+                  ),
                 ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text('On lrclib.net, open your song, tap Copy as → Synced lyrics (LRC), then paste here.'),
+              padding: const EdgeInsets.symmetric(horizontal: s16),
+              child: Text(
+                'On lrclib.net, open your song, tap Copy as → Synced lyrics (LRC), then paste here.',
+              ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(s16),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    ElevatedButton.icon(onPressed: _pasteFromClipboard, icon: const Icon(Icons.paste), label: const Text('Paste')),
-                    const SizedBox(width: 8),
-                    ElevatedButton.icon(onPressed: _importFile, icon: const Icon(Icons.file_open), label: const Text('Import .lrc file')),
-                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      onPressed: _pasteFromClipboard,
+                      icon: const Icon(Icons.paste),
+                      label: const Text('Paste'),
+                    ),
+                    const SizedBox(width: s8),
+                    OutlinedButton.icon(
+                      onPressed: _importFile,
+                      icon: const Icon(Icons.file_open),
+                      label: const Text('Import .lrc file'),
+                    ),
+                    const SizedBox(width: s8),
                     PopupMenuButton<String>(
-                      itemBuilder: (ctx) => externalSites.map((s) => PopupMenuItem(value: s, child: Text(s))).toList(),
+                      itemBuilder: (ctx) => externalSites
+                          .map((s) => PopupMenuItem(value: s, child: Text(s)))
+                          .toList(),
                       onSelected: (v) => _openSite(v),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           const Icon(Icons.open_in_new),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: s8),
                           const Text('External sites'),
                         ],
                       ),
@@ -128,23 +184,31 @@ class _LyricsImportSheetState extends State<LyricsImportSheet> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                padding: const EdgeInsets.symmetric(horizontal: s16),
                 child: TextField(
                   controller: _controller,
                   maxLines: null,
                   expands: true,
-                  decoration: const InputDecoration(border: OutlineInputBorder()),
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.all(s16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Cancel')),
-                  const SizedBox(width: 8),
-                  ElevatedButton(onPressed: _saveLyrics, child: const Text('Save')),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: s8),
+                  FilledButton(
+                    onPressed: _saveLyrics,
+                    child: const Text('Save'),
+                  ),
                 ],
               ),
             ),

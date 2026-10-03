@@ -7,14 +7,42 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'lyrics_import_sheet.dart';
 import '../src/lyrics/lyrics_view.dart';
 import '../models/track_model.dart';
+import '../theme/harmony_theme.dart';
+import '../widgets/harmony_widgets.dart';
 
 enum PlaybackMode { normal, shuffle, repeatAll, repeatOne }
 
 const _musicKeySignatures = [
-  'C major', 'G major', 'D major', 'A major', 'E major', 'B major', 'F# major', 'C# major',
-  'F major', 'Bb major', 'Eb major', 'Ab major', 'Db major', 'Gb major', 'Cb major',
-  'A minor', 'E minor', 'B minor', 'F# minor', 'C# minor', 'G# minor', 'D# minor', 'A# minor',
-  'D minor', 'G minor', 'C minor', 'F minor', 'Bb minor', 'Eb minor', 'Ab minor',
+  'C major',
+  'G major',
+  'D major',
+  'A major',
+  'E major',
+  'B major',
+  'F# major',
+  'C# major',
+  'F major',
+  'Bb major',
+  'Eb major',
+  'Ab major',
+  'Db major',
+  'Gb major',
+  'Cb major',
+  'A minor',
+  'E minor',
+  'B minor',
+  'F# minor',
+  'C# minor',
+  'G# minor',
+  'D# minor',
+  'A# minor',
+  'D minor',
+  'G minor',
+  'C minor',
+  'F minor',
+  'Bb minor',
+  'Eb minor',
+  'Ab minor',
 ];
 
 class HarmonyAudioController {
@@ -29,7 +57,9 @@ class HarmonyAudioController {
   final ValueNotifier<bool> isPlaying = ValueNotifier(false);
   final ValueNotifier<Duration> position = ValueNotifier(Duration.zero);
   final ValueNotifier<Duration> duration = ValueNotifier(Duration.zero);
-  final ValueNotifier<PlaybackMode> playbackMode = ValueNotifier(PlaybackMode.normal);
+  final ValueNotifier<PlaybackMode> playbackMode = ValueNotifier(
+    PlaybackMode.normal,
+  );
   final ValueNotifier<String?> errorMessage = ValueNotifier(null);
 
   bool _isInitialized = false;
@@ -65,35 +95,44 @@ class HarmonyAudioController {
       ),
     );
 
-    _subscriptions.add(_player.onPlayerStateChanged.listen((state) {
-      final playing = state == PlayerState.playing;
+    _subscriptions.add(
+      _player.onPlayerStateChanged.listen((state) {
+        final playing = state == PlayerState.playing;
 
-      // audioplayers can deliver a stale state event after pause/resume,
-      // especially for BytesSource and DeviceFileSource. Do not let that
-      // event overwrite the state requested by the most recent user action.
-      final guardActive = _manualStateGuardUntil?.isAfter(DateTime.now()) ?? false;
-      if (guardActive && _manualPlayingState != playing) {
-        return;
-      }
-      _manualStateGuardUntil = null;
-      _manualPlayingState = null;
+        // audioplayers can deliver a stale state event after pause/resume,
+        // especially for BytesSource and DeviceFileSource. Do not let that
+        // event overwrite the state requested by the most recent user action.
+        final guardActive =
+            _manualStateGuardUntil?.isAfter(DateTime.now()) ?? false;
+        if (guardActive && _manualPlayingState != playing) {
+          return;
+        }
+        _manualStateGuardUntil = null;
+        _manualPlayingState = null;
 
-      isPlaying.value = playing;
-      if (playing) {
-        _startPolling();
-      } else {
-        _stopPolling();
-      }
-      if (state == PlayerState.completed) {
+        isPlaying.value = playing;
+        if (playing) {
+          _startPolling();
+        } else {
+          _stopPolling();
+        }
+        if (state == PlayerState.completed) {
+          position.value = Duration.zero;
+        }
+      }),
+    );
+    _subscriptions.add(
+      _player.onPositionChanged.listen((p) => position.value = p),
+    );
+    _subscriptions.add(
+      _player.onDurationChanged.listen((d) => duration.value = d),
+    );
+    _subscriptions.add(
+      _player.onPlayerComplete.listen((_) {
         position.value = Duration.zero;
-      }
-    }));
-    _subscriptions.add(_player.onPositionChanged.listen((p) => position.value = p));
-    _subscriptions.add(_player.onDurationChanged.listen((d) => duration.value = d));
-    _subscriptions.add(_player.onPlayerComplete.listen((_) {
-      position.value = Duration.zero;
-      _advanceAfterCompletion();
-    }));
+        _advanceAfterCompletion();
+      }),
+    );
   }
 
   void _startPolling() {
@@ -115,7 +154,9 @@ class HarmonyAudioController {
   void _setPlayingState(bool playing, {bool guardStaleEvent = false}) {
     if (guardStaleEvent) {
       _manualPlayingState = playing;
-      _manualStateGuardUntil = DateTime.now().add(const Duration(milliseconds: 750));
+      _manualStateGuardUntil = DateTime.now().add(
+        const Duration(milliseconds: 750),
+      );
     } else {
       _manualPlayingState = null;
       _manualStateGuardUntil = null;
@@ -148,20 +189,29 @@ class HarmonyAudioController {
   }
 
   void updateTrack(TrackModel updated) {
-    queue.value = [for (final track in queue.value) track.id == updated.id ? updated : track];
+    queue.value = [
+      for (final track in queue.value) track.id == updated.id ? updated : track,
+    ];
     for (var i = 0; i < _baseQueue.length; i++) {
       if (_baseQueue[i].id == updated.id) _baseQueue[i] = updated;
     }
     if (currentTrack.value?.id == updated.id) currentTrack.value = updated;
   }
 
-  Future<void> playTrack(TrackModel track, {List<TrackModel>? sourceQueue}) async {
+  Future<void> playTrack(
+    TrackModel track, {
+    List<TrackModel>? sourceQueue,
+  }) async {
     await initialize();
     errorMessage.value = null;
 
     if (sourceQueue != null && sourceQueue.isNotEmpty) {
-      setQueue(sourceQueue, startIndex: sourceQueue.indexWhere((t) => t.id == track.id));
-    } else if (currentTrack.value == null || currentTrack.value!.id != track.id) {
+      setQueue(
+        sourceQueue,
+        startIndex: sourceQueue.indexWhere((t) => t.id == track.id),
+      );
+    } else if (currentTrack.value == null ||
+        currentTrack.value!.id != track.id) {
       currentTrack.value = track;
       queue.value = [track];
       currentIndex.value = 0;
@@ -302,7 +352,9 @@ class HarmonyAudioController {
       if (queue.value.isEmpty) return;
 
       final currentId = currentTrack.value?.id;
-      final available = queue.value.where((track) => track.id != currentId).toList();
+      final available = queue.value
+          .where((track) => track.id != currentId)
+          .toList();
       if (available.isEmpty) {
         await _player.seek(Duration.zero);
         await _player.resume();
@@ -311,7 +363,9 @@ class HarmonyAudioController {
       }
 
       final previous = available[_random.nextInt(available.length)];
-      final previousIndex = queue.value.indexWhere((track) => track.id == previous.id);
+      final previousIndex = queue.value.indexWhere(
+        (track) => track.id == previous.id,
+      );
       if (previousIndex >= 0) {
         currentIndex.value = previousIndex;
         currentTrack.value = previous;
@@ -336,7 +390,8 @@ class HarmonyAudioController {
       return;
     }
 
-    if (playbackMode.value == PlaybackMode.repeatAll && queue.value.isNotEmpty) {
+    if (playbackMode.value == PlaybackMode.repeatAll &&
+        queue.value.isNotEmpty) {
       final previous = queue.value.last;
       currentIndex.value = queue.value.length - 1;
       currentTrack.value = previous;
@@ -369,6 +424,40 @@ class HarmonyAudioController {
       await subscription.cancel();
     }
     await _player.dispose();
+  }
+}
+
+class _HarmonyThumbShape extends SliderComponentShape {
+  const _HarmonyThumbShape();
+
+  @override
+  Size getPreferredSize(bool isEnabled, bool isDiscrete) => const Size(18, 18);
+
+  @override
+  void paint(
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {
+    final canvas = context.canvas;
+    final paint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+    final border = Paint()
+      ..color = harmonyPrimary
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2;
+    canvas.drawCircle(center, 8, paint);
+    canvas.drawCircle(center, 8, border);
   }
 }
 
@@ -405,7 +494,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
-    if (_controller.currentTrack.value == null || _controller.currentTrack.value!.id != widget.track.id) {
+    if (_controller.currentTrack.value == null ||
+        _controller.currentTrack.value!.id != widget.track.id) {
       _controller.currentTrack.value = widget.track;
       _controller.position.value = Duration.zero;
       _controller.duration.value = Duration.zero;
@@ -418,7 +508,6 @@ class _PlayerScreenState extends State<PlayerScreen> {
     _controller.currentTrack.addListener(_syncFromController);
     _controller.errorMessage.addListener(_syncFromController);
     _controller.playbackMode.addListener(_syncFromController);
-
   }
 
   Future<void> _togglePlay() async {
@@ -431,7 +520,12 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _retryPlay() async {
     _controller.errorMessage.value = null;
-    await _controller.playTrack(_track, sourceQueue: _controller.queue.value.isEmpty ? [_track] : _controller.queue.value);
+    await _controller.playTrack(
+      _track,
+      sourceQueue: _controller.queue.value.isEmpty
+          ? [_track]
+          : _controller.queue.value,
+    );
     _syncFromController();
   }
 
@@ -468,59 +562,105 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   Future<void> _showCalibrationSheet() async {
     final track = _track;
-    final bpmController = TextEditingController(text: track.bpm > 0 ? track.bpm.toStringAsFixed(0) : '');
-    String? selectedKey = _musicKeySignatures.contains(track.keySignature) ? track.keySignature : null;
+    final bpmController = TextEditingController(
+      text: track.bpm > 0 ? track.bpm.toStringAsFixed(0) : '',
+    );
+    String? selectedKey = _musicKeySignatures.contains(track.keySignature)
+        ? track.keySignature
+        : null;
 
     final formKey = GlobalKey<FormState>();
 
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(12))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+        side: BorderSide(color: harmonyBorder),
+      ),
       builder: (ctx) {
         return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(s16),
             child: Form(
               key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Song Information', style: Theme.of(ctx).textTheme.titleLarge),
-                  const SizedBox(height: 12),
+                  Text(
+                    'Calibrate Metadata',
+                    style: Theme.of(ctx).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: s8),
+                  Text(
+                    '${track.title} · Current: ${track.bpm > 0 ? track.bpm.toStringAsFixed(0) : 'Not set'} BPM · ${track.keySignature.isEmpty ? 'Not set' : track.keySignature}',
+                    style: Theme.of(ctx).textTheme.labelSmall,
+                  ),
+                  const SizedBox(height: s24),
+                  const HarmonySectionLabel('QUICK ADJUSTMENTS'),
+                  const SizedBox(height: s8),
+                  Text(
+                    'Set Tempo (BPM)',
+                    style: Theme.of(ctx).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: s8),
                   TextFormField(
                     controller: bpmController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'BPM', hintText: 'e.g. 120'),
+                    decoration: const InputDecoration(
+                      hintText: 'e.g. 120',
+                      suffixText: 'BPM',
+                    ),
                     validator: (v) {
                       if (v == null || v.isEmpty) return 'Enter BPM';
                       final n = int.tryParse(v);
-                      if (n == null || n < 1 || n > 300) return 'Enter a BPM from 1 to 300';
+                      if (n == null || n < 1 || n > 300) {
+                        return 'Enter a BPM from 1 to 300';
+                      }
                       return null;
                     },
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: s24),
+                  const HarmonySectionLabel('MANUAL SELECTION'),
+                  const SizedBox(height: s8),
+                  Text(
+                    'Key Signature',
+                    style: Theme.of(ctx).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: s8),
                   DropdownButtonFormField<String>(
                     initialValue: selectedKey,
-                    decoration: const InputDecoration(labelText: 'Key Signature'),
+                    decoration: const InputDecoration(),
                     hint: const Text('Select a key signature'),
                     items: _musicKeySignatures
-                        .map((key) => DropdownMenuItem<String>(value: key, child: Text(key)))
+                        .map(
+                          (key) => DropdownMenuItem<String>(
+                            value: key,
+                            child: Text(key),
+                          ),
+                        )
                         .toList(),
                     onChanged: (value) => selectedKey = value,
-                    validator: (value) => value == null ? 'Select a key signature' : null,
+                    validator: (value) =>
+                        value == null ? 'Select a key signature' : null,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: s24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
-                      const SizedBox(width: 8),
-                      ElevatedButton(
+                      OutlinedButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: const Text('Cancel'),
+                      ),
+                      const SizedBox(width: s8),
+                      FilledButton(
                         onPressed: () async {
-                          if ((formKey.currentState?.validate() ?? false) && selectedKey != null) {
+                          if ((formKey.currentState?.validate() ?? false) &&
+                              selectedKey != null) {
                             final newBpm = double.parse(bpmController.text);
                             final newKey = selectedKey!;
                             // update hive box record matching this track id
@@ -540,7 +680,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 _controller.updateTrack(updated);
                                 if (mounted) {
                                   setState(() {});
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Calibration saved')));
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Calibration saved'),
+                                    ),
+                                  );
                                 }
                                 break;
                               }
@@ -567,15 +711,20 @@ class _PlayerScreenState extends State<PlayerScreen> {
     final result = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => LyricsImportSheet(trackId: track.id, title: track.title, duration: _controller.duration.value),
+      builder: (_) => LyricsImportSheet(
+        trackId: track.id,
+        title: track.title,
+        duration: _controller.duration.value,
+      ),
     );
     if (result == true) {
       setState(() {});
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  // Retained only as a reference for the pre-design-system layout.
+  // ignore: unused_element
+  Widget _legacyBuild(BuildContext context) {
     final activeTrack = _controller.currentTrack.value ?? _track;
     final isPlaying = _controller.isPlaying.value;
     final position = _controller.position.value;
@@ -603,8 +752,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
               ],
             ),
             Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
@@ -616,18 +767,26 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         color: Colors.grey[300],
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.music_note, size: 42, color: Colors.black54),
+                      child: const Icon(
+                        Icons.music_note,
+                        size: 42,
+                        color: Colors.black54,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(activeTrack.title, style: Theme.of(context).textTheme.titleLarge),
+                          Text(
+                            activeTrack.title,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
                           const SizedBox(height: 6),
                           Text(
                             'Key: ${activeTrack.keySignature.isEmpty ? 'Not set' : activeTrack.keySignature} • ${activeTrack.bpm > 0 ? '${activeTrack.bpm.toStringAsFixed(0)} BPM' : 'BPM not set'}',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black87),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.black87),
                           ),
                         ],
                       ),
@@ -648,8 +807,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 ),
                 IconButton(
                   onPressed: error == null ? _togglePlay : _retryPlay,
-                  icon: Icon(error != null ? Icons.refresh_rounded : (isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded)),
-                  tooltip: error != null ? 'Retry' : (isPlaying ? 'Pause' : 'Play'),
+                  icon: Icon(
+                    error != null
+                        ? Icons.refresh_rounded
+                        : (isPlaying
+                              ? Icons.pause_rounded
+                              : Icons.play_arrow_rounded),
+                  ),
+                  tooltip: error != null
+                      ? 'Retry'
+                      : (isPlaying ? 'Pause' : 'Play'),
                   iconSize: 30,
                   style: IconButton.styleFrom(
                     minimumSize: const Size(52, 52),
@@ -674,18 +841,26 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 SliderTheme(
                   data: SliderTheme.of(context).copyWith(
                     activeTrackColor: Theme.of(context).colorScheme.primary,
-                    inactiveTrackColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.2),
+                    inactiveTrackColor: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.2),
                     thumbColor: Theme.of(context).colorScheme.primary,
-                    overlayColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.12),
+                    overlayColor: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: 0.12),
                     trackHeight: 4,
                   ),
                   child: Slider(
                     min: 0.0,
-                    max: duration.inMilliseconds > 0 ? duration.inMilliseconds.toDouble() : 1.0,
+                    max: duration.inMilliseconds > 0
+                        ? duration.inMilliseconds.toDouble()
+                        : 1.0,
                     value: PlayerScreen.sliderValueFor(position, duration),
                     onChanged: (duration.inMilliseconds > 0)
                         ? (value) async {
-                            await _seekTo(Duration(milliseconds: value.toInt()));
+                            await _seekTo(
+                              Duration(milliseconds: value.toInt()),
+                            );
                           }
                         : null,
                   ),
@@ -693,8 +868,14 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(_format(position), style: Theme.of(context).textTheme.bodySmall),
-                    Text(_format(duration), style: Theme.of(context).textTheme.bodySmall),
+                    Text(
+                      _format(position),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    Text(
+                      _format(duration),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ],
                 ),
               ],
@@ -706,12 +887,27 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('BPM', style: Theme.of(context).textTheme.bodySmall),
-                      const SizedBox(height: 6),
-                      Text(activeTrack.bpm > 0 ? activeTrack.bpm.toStringAsFixed(0) : 'Not set', style: Theme.of(context).textTheme.titleLarge),
-                    ]),
-                    ElevatedButton.icon(onPressed: _showCalibrationSheet, icon: const Icon(Icons.tune), label: const Text('Edit'))
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'BPM',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          activeTrack.bpm > 0
+                              ? activeTrack.bpm.toStringAsFixed(0)
+                              : 'Not set',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ],
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: _showCalibrationSheet,
+                      icon: const Icon(Icons.tune),
+                      label: const Text('Edit'),
+                    ),
                   ],
                 ),
               ),
@@ -725,14 +921,211 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 children: [
                   const SizedBox(height: 6),
                   // Widget located in src/lyrics
-                  Builder(builder: (ctx) {
-                    // insert the LyricsView
-                    return Column(children: [
-                      const SizedBox(height: 8),
-                      LyricsView(trackId: activeTrack.id, title: activeTrack.title),
-                    ]);
-                  }),
+                  Builder(
+                    builder: (ctx) {
+                      // insert the LyricsView
+                      return Column(
+                        children: [
+                          const SizedBox(height: 8),
+                          LyricsView(
+                            trackId: activeTrack.id,
+                            title: activeTrack.title,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final activeTrack = _controller.currentTrack.value ?? _track;
+    final isPlaying = _controller.isPlaying.value;
+    final position = _controller.position.value;
+    final duration = _controller.duration.value;
+    final error = _controller.errorMessage.value;
+    final mode = _controller.playbackMode.value;
+    final keyParts = activeTrack.keySignature.split(' ');
+    final keyRoot = activeTrack.keySignature.isEmpty
+        ? 'Not set'
+        : keyParts.first;
+    final keyMode = keyParts.length > 1
+        ? keyParts.sublist(1).join(' ').toUpperCase()
+        : null;
+
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            HarmonyHeaderBar(
+              title: activeTrack.title,
+              leading: HarmonyHeaderBar.squareButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => Navigator.of(context).pop(),
+                tooltip: 'Back',
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(s16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: HarmonyMetricCard(
+                            label: 'TEMPO',
+                            value: activeTrack.bpm > 0
+                                ? activeTrack.bpm.toStringAsFixed(0)
+                                : 'Not set',
+                            caption: activeTrack.bpm > 0 ? 'BPM' : null,
+                          ),
+                        ),
+                        const SizedBox(width: s16),
+                        Expanded(
+                          child: HarmonyMetricCard(
+                            label: 'KEY SIGNATURE',
+                            value: keyRoot,
+                            caption: keyMode,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: s16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _showCalibrationSheet,
+                        icon: const Icon(Icons.tune),
+                        label: const Text('Calibrate & Verify Data'),
+                      ),
+                    ),
+                    const SizedBox(height: s24),
+                    HarmonyCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const HarmonySectionLabel('LYRICS'),
+                              const Spacer(),
+                              OutlinedButton.icon(
+                                onPressed: _showLyricsImport,
+                                icon: const Icon(Icons.add, size: 16),
+                                label: const Text('Add lyrics'),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: s16),
+                          LyricsView(
+                            trackId: activeTrack.id,
+                            title: activeTrack.title,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: s24),
+                    SliderTheme(
+                      data: Theme.of(context).sliderTheme.copyWith(
+                        thumbShape: const _HarmonyThumbShape(),
+                        trackHeight: 2,
+                      ),
+                      child: Slider(
+                        min: 0.0,
+                        max: duration.inMilliseconds > 0
+                            ? duration.inMilliseconds.toDouble()
+                            : 1.0,
+                        value: PlayerScreen.sliderValueFor(position, duration),
+                        onChanged: duration.inMilliseconds > 0
+                            ? (value) async {
+                                await _seekTo(
+                                  Duration(milliseconds: value.toInt()),
+                                );
+                              }
+                            : null,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _format(position),
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                        Text(
+                          _format(duration),
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: s16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          onPressed: _previousTrack,
+                          tooltip: 'Previous track',
+                          icon: const Icon(Icons.skip_previous_rounded),
+                        ),
+                        const SizedBox(width: s8),
+                        SizedBox(
+                          width: 64,
+                          height: 64,
+                          child: IconButton.filled(
+                            onPressed: error != null ? _retryPlay : _togglePlay,
+                            tooltip: error != null
+                                ? 'Retry'
+                                : (isPlaying ? 'Pause' : 'Play'),
+                            icon: Icon(
+                              error != null
+                                  ? Icons.refresh_rounded
+                                  : (isPlaying
+                                        ? Icons.pause_rounded
+                                        : Icons.play_arrow_rounded),
+                              color: Colors.white,
+                            ),
+                            iconSize: 30,
+                          ),
+                        ),
+                        const SizedBox(width: s8),
+                        IconButton(
+                          onPressed: _nextTrack,
+                          tooltip: 'Next track',
+                          icon: const Icon(Icons.skip_next_rounded),
+                        ),
+                        const SizedBox(width: s8),
+                        IconButton(
+                          onPressed: _cyclePlaybackMode,
+                          tooltip: mode.name,
+                          icon: Icon(_playbackIcon(mode)),
+                          style: IconButton.styleFrom(
+                            side: const BorderSide(color: harmonyBorder),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (error != null) ...[
+                      const SizedBox(height: s8),
+                      Text(
+                        error,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: harmonySecondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ],

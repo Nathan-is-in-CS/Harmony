@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'lrc_parser.dart';
 import '../../screens/player_screen.dart' show HarmonyAudioController;
+import '../../theme/harmony_theme.dart';
 
 class LyricsView extends StatefulWidget {
   final String trackId;
@@ -69,7 +70,10 @@ class _LyricsViewState extends State<LyricsView> {
       if (linesRaw != null && linesRaw.isNotEmpty) {
         _lines = linesRaw.map((e) {
           final m = Map<String, dynamic>.from(e as Map);
-          return LyricLine(timeMs: (m['timeMs'] as int?) ?? 0, text: (m['text'] as String?) ?? '');
+          return LyricLine(
+            timeMs: (m['timeMs'] as int?) ?? 0,
+            text: (m['text'] as String?) ?? '',
+          );
         }).toList();
         _synced = true;
         _offsetMs = offset;
@@ -104,7 +108,11 @@ class _LyricsViewState extends State<LyricsView> {
           if (!_scroll.hasClients) return;
           final itemExtent = 56.0;
           final offset = (_activeIndex * itemExtent) - (itemExtent * 2);
-          _scroll.animateTo(offset.clamp(0.0, _scroll.position.maxScrollExtent), duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+          _scroll.animateTo(
+            offset.clamp(0.0, _scroll.position.maxScrollExtent),
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOut,
+          );
         });
       }
       if (mounted) setState(() {});
@@ -121,7 +129,9 @@ class _LyricsViewState extends State<LyricsView> {
     _offsetMs += deltaMs;
     final box = Hive.box('lyrics_box');
     final raw = box.get(widget.trackId) as Map?;
-    final map = raw != null ? Map<String, dynamic>.from(raw) : <String, dynamic>{};
+    final map = raw != null
+        ? Map<String, dynamic>.from(raw)
+        : <String, dynamic>{};
     map['offset'] = _offsetMs;
     await box.put(widget.trackId, map);
     if (mounted) setState(() {});
@@ -131,8 +141,11 @@ class _LyricsViewState extends State<LyricsView> {
   Widget build(BuildContext context) {
     if (!_synced && _lines.isEmpty) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 24.0),
-        child: const Text('No synced lyrics available.'),
+        padding: const EdgeInsets.symmetric(vertical: s24),
+        child: Text(
+          'No synced lyrics available.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
       );
     }
 
@@ -142,12 +155,39 @@ class _LyricsViewState extends State<LyricsView> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(_synced ? 'Synced Lyrics' : 'Lyrics', style: Theme.of(context).textTheme.titleSmall),
-            Row(children: [
-              IconButton(onPressed: () => _nudgeOffset(-500), icon: const Icon(Icons.remove)),
-              Text('${(_offsetMs / 1000).toStringAsFixed(2)}s'),
-              IconButton(onPressed: () => _nudgeOffset(500), icon: const Icon(Icons.add)),
-            ])
+            Text(
+              _synced ? 'Synced Lyrics' : 'Lyrics',
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.2,
+              ),
+            ),
+            Row(
+              children: [
+                IconButton(
+                  onPressed: () => _nudgeOffset(-500),
+                  icon: const Icon(Icons.remove, size: 16),
+                  style: IconButton.styleFrom(
+                    side: const BorderSide(color: harmonyBorder),
+                    minimumSize: const Size(32, 32),
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+                Text(
+                  '${(_offsetMs / 1000).toStringAsFixed(2)}s',
+                  style: Theme.of(context).textTheme.labelSmall,
+                ),
+                IconButton(
+                  onPressed: () => _nudgeOffset(500),
+                  icon: const Icon(Icons.add, size: 16),
+                  style: IconButton.styleFrom(
+                    side: const BorderSide(color: harmonyBorder),
+                    minimumSize: const Size(32, 32),
+                    padding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -163,13 +203,38 @@ class _LyricsViewState extends State<LyricsView> {
                 onTap: _synced ? () => _seekToLine(index) : null,
                 child: Container(
                   // `withOpacity` is deprecated; use `withAlpha` for equivalent effect.
-                  color: isActive ? Theme.of(context).colorScheme.primary.withAlpha((0.12 * 255).round()) : null,
-                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                  color: isActive ? harmonySurface : harmonyBackground,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: s8,
+                    horizontal: s8,
+                  ),
+                  decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: harmonyBorder)),
+                  ),
                   child: Row(
                     children: [
-                      SizedBox(width: 76, child: Text(_formatMs(line.timeMs), style: TextStyle(color: Colors.black54, fontSize: 12))),
-                      const SizedBox(width: 12),
-                      Expanded(child: Text(line.text, style: TextStyle(fontSize: isActive ? 16 : 14, fontWeight: isActive ? FontWeight.w700 : FontWeight.w400))),
+                      SizedBox(
+                        width: 76,
+                        child: Text(
+                          _formatMs(line.timeMs),
+                          style: Theme.of(context).textTheme.labelSmall,
+                        ),
+                      ),
+                      const SizedBox(width: s8),
+                      Expanded(
+                        child: Text(
+                          line.text,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: isActive
+                                    ? harmonyBody
+                                    : harmonySecondary,
+                                fontWeight: isActive
+                                    ? FontWeight.w700
+                                    : FontWeight.w400,
+                              ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

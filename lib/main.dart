@@ -1,16 +1,8 @@
-// This is your app. It runs as it is: press run and you get the screen below.
-//
-// Nothing here is precious. Change the title, change the colors, delete the
-// counter, add your own screens. It exists so that the repository is a working
-// Flutter app from minute one instead of an empty folder.
-//
-// Everything in this file is Module 4 and 5 material: StatelessWidget,
-// StatefulWidget, setState, Scaffold, AppBar, Column, Card, FilledButton.
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'screens/library_screen.dart';
+import 'theme/harmony_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,27 +24,10 @@ class MyApp extends StatelessWidget {
       title: 'Harmony',
       debugShowCheckedModeBanner: false,
 
-      theme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1F2A44),
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF3F2EF),
-        appBarTheme: const AppBarTheme(
-          centerTitle: false,
-          backgroundColor: Color(0xFFE7E5E2),
-          foregroundColor: Colors.black,
-        ),
-      ),
+      theme: buildHarmonyTheme(),
+      themeMode: ThemeMode.light,
 
       home: const LibraryScreen(),
     );
   }
 }
-
-/// The first screen. Replace it with yours.
-///
-/// It is a StatefulWidget because it remembers something that changes: the
-/// counter. A screen that never changes can be a StatelessWidget instead.
-// Note: HomeScreen replaced by LibraryScreen in a separate file.

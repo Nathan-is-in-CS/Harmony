@@ -5,11 +5,17 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../models/track_model.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import '../src/platform_io_nonweb.dart' if (dart.library.html) '../src/platform_io_web.dart';
+import '../src/platform_io_nonweb.dart'
+    if (dart.library.html) '../src/platform_io_web.dart';
 import 'player_screen.dart';
 import 'settings_screen.dart';
+import '../theme/harmony_theme.dart';
+import '../widgets/harmony_widgets.dart';
 
-Widget _buildMiniPlayer(BuildContext context, HarmonyAudioController controller) {
+Widget _buildMiniPlayer(
+  BuildContext context,
+  HarmonyAudioController controller,
+) {
   final currentTrack = controller.currentTrack.value;
   if (currentTrack == null) {
     return const SizedBox.shrink();
@@ -25,61 +31,58 @@ Widget _buildMiniPlayer(BuildContext context, HarmonyAudioController controller)
             valueListenable: controller.duration,
             builder: (context, duration, _) {
               return Container(
-                margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.fromLTRB(s16, 0, s16, s16),
+                padding: const EdgeInsets.all(s8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.94),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.06),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+                  color: harmonySurface,
+                  border: Border.all(color: harmonyBorder),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(4),
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => PlayerScreen(track: currentTrack)),
+                      MaterialPageRoute(
+                        builder: (_) => PlayerScreen(track: currentTrack),
+                      ),
                     );
                   },
                   child: Row(
                     children: [
                       Container(
-                        width: 52,
-                        height: 52,
+                        width: 40,
+                        height: 40,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEEE7FF),
-                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: harmonyBorder),
+                          borderRadius: BorderRadius.circular(4),
                         ),
-                        child: const Icon(Icons.music_note_rounded, color: Color(0xFF2C2A6B)),
+                        child: const Icon(Icons.music_note_rounded),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: s8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               currentTrack.title,
-                              style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                              style: Theme.of(context).textTheme.titleMedium,
                               overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              () {
-                                final parts = <String>[
-                                  if (currentTrack.keySignature.isNotEmpty) currentTrack.keySignature,
-                                  if (currentTrack.bpm > 0) '${currentTrack.bpm.toStringAsFixed(0)} BPM',
-                                ];
-                                return parts.isEmpty ? 'Metadata not set' : parts.join(' • ');
-                              }(),
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.black54),
-                            ),
+                            Text(() {
+                              final parts = <String>[
+                                if (currentTrack.keySignature.isNotEmpty)
+                                  currentTrack.keySignature,
+                                if (currentTrack.bpm > 0)
+                                  '${currentTrack.bpm.toStringAsFixed(0)} BPM',
+                              ];
+                              return parts.isEmpty
+                                  ? 'Metadata not set'
+                                  : parts.join(' | ');
+                            }(), style: Theme.of(context).textTheme.labelSmall),
                           ],
                         ),
                       ),
-                      IconButton(
+                      IconButton.filled(
                         onPressed: () async {
                           if (isPlaying) {
                             await controller.pause();
@@ -87,7 +90,9 @@ Widget _buildMiniPlayer(BuildContext context, HarmonyAudioController controller)
                             await controller.resume();
                           }
                         },
-                        icon: Icon(isPlaying ? Icons.pause : Icons.play_arrow_rounded),
+                        icon: Icon(
+                          isPlaying ? Icons.pause : Icons.play_arrow_rounded,
+                        ),
                       ),
                     ],
                   ),
@@ -180,7 +185,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
         continue;
       }
 
-      final haystack = '${track.title} ${track.path} ${track.keySignature}'.toLowerCase();
+      final haystack = '${track.title} ${track.path} ${track.keySignature}'
+          .toLowerCase();
       if (haystack.contains(query)) {
         matches.add(map);
       }
@@ -233,7 +239,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
   }
 
   Future<void> _runInitialDeviceScan() async {
-    final alreadyScanned = _settingsBox.get('device_audio_scanned', defaultValue: false) as bool;
+    final alreadyScanned =
+        _settingsBox.get('device_audio_scanned', defaultValue: false) as bool;
     if (alreadyScanned && _tracksBox.isNotEmpty) return;
 
     final hasPermission = await _requestAudioPermission();
@@ -241,7 +248,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
       await _settingsBox.put('device_audio_scanned', false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Storage access is required to scan your local audio files.')),
+          const SnackBar(
+            content: Text(
+              'Storage access is required to scan your local audio files.',
+            ),
+          ),
         );
       }
       return;
@@ -271,7 +282,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              updated.isUserVerified ? 'Marked ${track.title} as verified' : 'Removed verification from ${track.title}',
+              updated.isUserVerified
+                  ? 'Marked ${track.title} as verified'
+                  : 'Removed verification from ${track.title}',
             ),
           ),
         );
@@ -287,10 +300,18 @@ class _LibraryScreenState extends State<LibraryScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Remove track?'),
-        content: Text('Delete "${track.title}" from your local Harmony library?'),
+        content: Text(
+          'Delete "${track.title}" from your local Harmony library?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: const Text('Cancel')),
-          FilledButton.tonal(onPressed: () => Navigator.of(ctx).pop(true), child: const Text('Delete')),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton.tonal(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
         ],
       ),
     );
@@ -330,7 +351,11 @@ class _LibraryScreenState extends State<LibraryScreen> {
       await _settingsBox.put('device_audio_scanned', false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Storage access is required to scan your local audio files.')),
+          const SnackBar(
+            content: Text(
+              'Storage access is required to scan your local audio files.',
+            ),
+          ),
         );
       }
       return;
@@ -348,7 +373,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
         await _settingsBox.put('device_audio_scanned', false);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No local audio files were found on this device.')),
+            const SnackBar(
+              content: Text('No local audio files were found on this device.'),
+            ),
           );
         }
         return;
@@ -373,7 +400,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
         if (_tracksBox.values.any((entry) {
           if (entry is! Map) return false;
           final track = TrackModel.fromMap(Map<String, dynamic>.from(entry));
-          return normalizeAudioPath(track.path) == canonicalPath || normalizeAudioPath(track.path) == normalizedPath;
+          return normalizeAudioPath(track.path) == canonicalPath ||
+              normalizeAudioPath(track.path) == normalizedPath;
         })) {
           continue;
         }
@@ -400,7 +428,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
       await _settingsBox.put('device_audio_scanned', true);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(added > 0 ? 'Found $added new audio file(s)' : 'Device audio already up to date')),
+          SnackBar(
+            content: Text(
+              added > 0
+                  ? 'Found $added new audio file(s)'
+                  : 'Device audio already up to date',
+            ),
+          ),
         );
       }
       if (mounted) setState(() {});
@@ -409,8 +443,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  // Retained only as a reference for the pre-design-system layout.
+  // ignore: unused_element
+  Widget _legacyBuild(BuildContext context) {
     final theme = Theme.of(context);
     final controller = HarmonyAudioController.instance;
 
@@ -424,23 +459,38 @@ class _LibraryScreenState extends State<LibraryScreen> {
             icon: const Icon(Icons.sort_rounded),
             onSelected: (sort) => setState(() => _trackSort = sort),
             itemBuilder: (context) => [
-              const PopupMenuItem(value: _TrackSort.title, child: Text('Sort: Title')),
-              const PopupMenuItem(value: _TrackSort.bpm, child: Text('Sort: BPM')),
-              const PopupMenuItem(value: _TrackSort.verified, child: Text('Sort: Verified')),
+              const PopupMenuItem(
+                value: _TrackSort.title,
+                child: Text('Sort: Title'),
+              ),
+              const PopupMenuItem(
+                value: _TrackSort.bpm,
+                child: Text('Sort: BPM'),
+              ),
+              const PopupMenuItem(
+                value: _TrackSort.verified,
+                child: Text('Sort: Verified'),
+              ),
             ],
           ),
           IconButton(
-            onPressed: _isScanning ? null : () => _scanDeviceAudioFiles(includeExisting: true),
+            onPressed: _isScanning
+                ? null
+                : () => _scanDeviceAudioFiles(includeExisting: true),
             icon: _isScanning
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
                 : const Icon(Icons.search_rounded),
             tooltip: 'Scan device audio',
           ),
           IconButton(
             onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const SettingsScreen()),
-              );
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
             },
             icon: const Icon(Icons.settings_outlined),
             tooltip: 'Settings',
@@ -488,10 +538,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.library_music_rounded, size: 52, color: Colors.black45),
+                          const Icon(
+                            Icons.library_music_rounded,
+                            size: 52,
+                            color: Colors.black45,
+                          ),
                           const SizedBox(height: 12),
                           Text(
-                            _isScanning ? 'Scanning your device for local audio…' : 'No local tracks yet',
+                            _isScanning
+                                ? 'Scanning your device for local audio…'
+                                : 'No local tracks yet',
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 8),
@@ -500,13 +556,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
                                 ? 'Harmony is scanning your device storage for downloaded audio files.'
                                 : 'Tap below to scan your device for stored music and start your local library.',
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.black54),
                           ),
                           const SizedBox(height: 16),
                           FilledButton.icon(
-                            onPressed: _isScanning ? null : () => _scanDeviceAudioFiles(includeExisting: true),
+                            onPressed: _isScanning
+                                ? null
+                                : () => _scanDeviceAudioFiles(
+                                    includeExisting: true,
+                                  ),
                             icon: const Icon(Icons.search_rounded),
-                            label: Text(_isScanning ? 'Scanning…' : 'Scan device audio'),
+                            label: Text(
+                              _isScanning ? 'Scanning…' : 'Scan device audio',
+                            ),
                           ),
                         ],
                       ),
@@ -514,14 +577,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   );
                 }
                 if (filteredTracks.isEmpty) {
-                  return const Center(child: Text('No tracks match your search'));
+                  return const Center(
+                    child: Text('No tracks match your search'),
+                  );
                 }
                 return ListView.builder(
                   itemCount: filteredTracks.length,
                   itemBuilder: (context, index) {
                     final raw = filteredTracks[index];
                     final track = TrackModel.fromMap(raw);
-                    final queue = filteredTracks.map((entry) => TrackModel.fromMap(Map<String, dynamic>.from(entry))).toList();
+                    final queue = filteredTracks
+                        .map(
+                          (entry) => TrackModel.fromMap(
+                            Map<String, dynamic>.from(entry),
+                          ),
+                        )
+                        .toList();
                     return ListTile(
                       leading: const Icon(Icons.audiotrack),
                       title: Text(track.title),
@@ -537,7 +608,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             const SizedBox(height: 4),
                             Text(
                               track.path,
-                              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[700],
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],
@@ -550,15 +624,27 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             Padding(
                               padding: const EdgeInsets.only(right: 8.0),
                               child: Chip(
-                                label: const Text('VERIFIED', style: TextStyle(color: Colors.white, fontSize: 12)),
+                                label: const Text(
+                                  'VERIFIED',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                ),
                                 backgroundColor: Colors.black87,
                               ),
                             ),
                           IconButton(
-                            tooltip: track.isUserVerified ? 'Unverify track' : 'Verify track',
+                            tooltip: track.isUserVerified
+                                ? 'Unverify track'
+                                : 'Verify track',
                             icon: Icon(
-                              track.isUserVerified ? Icons.check_circle_rounded : Icons.check_circle_outline_rounded,
-                              color: track.isUserVerified ? Theme.of(context).colorScheme.primary : Colors.grey,
+                              track.isUserVerified
+                                  ? Icons.check_circle_rounded
+                                  : Icons.check_circle_outline_rounded,
+                              color: track.isUserVerified
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Colors.grey,
                             ),
                             onPressed: () => _toggleVerified(track),
                           ),
@@ -571,11 +657,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       ),
                       onTap: () async {
                         final sourceQueue = queue.isNotEmpty ? queue : [track];
-                        await controller.playTrack(track, sourceQueue: sourceQueue);
+                        await controller.playTrack(
+                          track,
+                          sourceQueue: sourceQueue,
+                        );
 
                         if (context.mounted) {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => PlayerScreen(track: track)),
+                            MaterialPageRoute(
+                              builder: (_) => PlayerScreen(track: track),
+                            ),
                           );
                         }
                       },
@@ -597,5 +688,302 @@ class _LibraryScreenState extends State<LibraryScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = HarmonyAudioController.instance;
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            HarmonyHeaderBar(
+              title: 'Harmony',
+              trailing: HarmonyHeaderBar.squareButton(
+                icon: const Icon(Icons.settings_outlined),
+                tooltip: 'Settings',
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(s16, s16, s16, s8),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) => setState(() => _searchQuery = value),
+                decoration: InputDecoration(
+                  hintText: 'Search your tracks',
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  suffixIcon: _searchQuery.isEmpty
+                      ? null
+                      : IconButton(
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                          icon: const Icon(Icons.close_rounded),
+                        ),
+                ),
+              ),
+            ),
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: _tracksBox.listenable(),
+                builder: (context, Box box, _) {
+                  final filteredTracks = _filteredTrackMaps(box);
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: s16,
+                          vertical: s8,
+                        ),
+                        child: Row(
+                          children: [
+                            Text(
+                              'Found ${filteredTracks.length} tracks',
+                              style: Theme.of(context).textTheme.labelSmall,
+                            ),
+                            const Spacer(),
+                            TextButton.icon(
+                              onPressed: _isScanning
+                                  ? null
+                                  : () => _scanDeviceAudioFiles(
+                                      includeExisting: true,
+                                    ),
+                              icon: _isScanning
+                                  ? const SizedBox(
+                                      width: 14,
+                                      height: 14,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Icon(Icons.refresh, size: 18),
+                              label: const Text('Scan device audio'),
+                            ),
+                            const SizedBox(width: s8),
+                            PopupMenuButton<_TrackSort>(
+                              tooltip: 'Sort tracks',
+                              icon: const Icon(Icons.sort_rounded),
+                              onSelected: (sort) =>
+                                  setState(() => _trackSort = sort),
+                              itemBuilder: (context) => const [
+                                PopupMenuItem(
+                                  value: _TrackSort.title,
+                                  child: Text('Sort: Title'),
+                                ),
+                                PopupMenuItem(
+                                  value: _TrackSort.bpm,
+                                  child: Text('Sort: BPM'),
+                                ),
+                                PopupMenuItem(
+                                  value: _TrackSort.verified,
+                                  child: Text('Sort: Verified'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: box.isEmpty
+                            ? _LibraryEmptyState(
+                                isScanning: _isScanning,
+                                onScan: () => _scanDeviceAudioFiles(
+                                  includeExisting: true,
+                                ),
+                              )
+                            : filteredTracks.isEmpty
+                            ? Center(
+                                child: Text(
+                                  'No tracks match your search',
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              )
+                            : ListView.separated(
+                                itemCount: filteredTracks.length,
+                                separatorBuilder: (context, index) =>
+                                    const Divider(),
+                                itemBuilder: (context, index) {
+                                  final track = TrackModel.fromMap(
+                                    filteredTracks[index],
+                                  );
+                                  final queue = filteredTracks
+                                      .map(
+                                        (entry) => TrackModel.fromMap(
+                                          Map<String, dynamic>.from(entry),
+                                        ),
+                                      )
+                                      .toList();
+                                  return _TrackRow(
+                                    track: track,
+                                    onVerify: () => _toggleVerified(track),
+                                    onDelete: () => _removeTrack(track),
+                                    onTap: () async {
+                                      await controller.playTrack(
+                                        track,
+                                        sourceQueue: queue.isNotEmpty
+                                            ? queue
+                                            : [track],
+                                      );
+                                      if (context.mounted) {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                PlayerScreen(track: track),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  );
+                                },
+                              ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+            ValueListenableBuilder<TrackModel?>(
+              valueListenable: controller.currentTrack,
+              builder: (context, currentTrack, _) => currentTrack == null
+                  ? const SizedBox.shrink()
+                  : _buildMiniPlayer(context, controller),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _LibraryEmptyState extends StatelessWidget {
+  final bool isScanning;
+  final VoidCallback onScan;
+  const _LibraryEmptyState({required this.isScanning, required this.onScan});
+  @override
+  Widget build(BuildContext context) => Center(
+    child: Padding(
+      padding: const EdgeInsets.all(s24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.library_music_outlined, size: 40),
+          const SizedBox(height: s16),
+          Text(
+            isScanning ? 'Scanning your device…' : 'No local tracks yet',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: s8),
+          Text(
+            isScanning
+                ? 'Harmony is scanning your device storage for downloaded audio files.'
+                : 'Tap below to scan your device for stored music and start your local library.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: s16),
+          FilledButton.icon(
+            onPressed: isScanning ? null : onScan,
+            icon: const Icon(Icons.refresh),
+            label: Text(isScanning ? 'Scanning…' : 'Scan device audio'),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _TrackRow extends StatelessWidget {
+  final TrackModel track;
+  final VoidCallback onVerify;
+  final VoidCallback onDelete;
+  final VoidCallback onTap;
+  const _TrackRow({
+    required this.track,
+    required this.onVerify,
+    required this.onDelete,
+    required this.onTap,
+  });
+
+  String get _displayTitle {
+    if (track.path.isEmpty) return track.title;
+    final match = RegExp(r'\.[^.\\/]+$').firstMatch(track.path);
+    return match == null ? track.title : '${track.title}${match.group(0)}';
+  }
+
+  HarmonyStatusVariant get _status {
+    if (track.isUserVerified) return HarmonyStatusVariant.verified;
+    if (track.bpm == 0 || track.keySignature.isEmpty) {
+      return HarmonyStatusVariant.unprocessed;
+    }
+    return HarmonyStatusVariant.unverified;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final metadata = track.bpm > 0 && track.keySignature.isNotEmpty
+        ? '${track.bpm.toStringAsFixed(0)} BPM | ${_formatKey(track.keySignature)}'
+        : 'BPM and key not set';
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: s16, vertical: s8),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                border: Border.all(color: harmonyBorder),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const Icon(Icons.audiotrack, size: 20),
+            ),
+            const SizedBox(width: s16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _displayTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(metadata, style: Theme.of(context).textTheme.labelSmall),
+                  const SizedBox(height: 4),
+                  HarmonyStatusBadge(variant: _status),
+                ],
+              ),
+            ),
+            const SizedBox(width: s8),
+            IconButton(
+              onPressed: onVerify,
+              tooltip: track.isUserVerified ? 'Unverify track' : 'Verify track',
+              icon: Icon(
+                track.isUserVerified
+                    ? Icons.check_circle
+                    : Icons.check_circle_outline,
+              ),
+            ),
+            IconButton(
+              onPressed: onDelete,
+              tooltip: 'Delete track',
+              icon: const Icon(Icons.delete_outline),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatKey(String value) {
+    final parts = value.split(' ');
+    if (parts.length < 2) return value;
+    return '${parts.first} ${parts.sublist(1).map((part) => part[0].toUpperCase() + part.substring(1).toLowerCase()).join(' ')}';
   }
 }
