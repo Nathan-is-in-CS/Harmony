@@ -133,7 +133,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               const SizedBox(height: 18),
               const Text(
-                'SYNC • BEHAVIOR',
+                'BEHAVIOR',
                 style: TextStyle(fontSize: 16, letterSpacing: 1.5, fontWeight: FontWeight.w700, color: Colors.black87),
               ),
               const SizedBox(height: 18),
@@ -194,19 +194,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              const Text(
-                'SYNC',
-                style: TextStyle(fontSize: 18, letterSpacing: 1.5, fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: 12),
-              _SyncRow(
-                icon: Icons.upload_file,
-                title: 'Export verified metadata',
-                subtitle: 'Share verified metadata',
-                trailing: const Icon(Icons.chevron_right),
-              ),
-              const SizedBox(height: 24),
               Row(
                 children: [
                   Expanded(
@@ -304,58 +291,6 @@ class _ActionButton extends StatelessWidget {
       style: FilledButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
-  }
-}
-
-class _SyncRow extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Widget trailing;
-
-  const _SyncRow({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.trailing,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7F7F5),
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.black12),
-            ),
-            child: Icon(icon, size: 28),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 4),
-                Text(subtitle, style: const TextStyle(fontSize: 16, color: Colors.black54)),
-              ],
-            ),
-          ),
-          trailing,
-        ],
       ),
     );
   }

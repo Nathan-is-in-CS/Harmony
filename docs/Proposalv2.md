@@ -82,7 +82,7 @@ Musicians working with rough demos, vocal stems, or live rehearsal recordings st
 1. **Track Library Screen (Home Base):** Full file search, track statistics summary, and vertical song item list.
 2. **Player and Practice Workspace View:** Local audio playback controls, track details, and synced lyrics/notes viewer.
 3. **Edit Calibration Dialog (Bottom-Sheet Modal):** Dropdown property adjusters for track metadata and local verification state with Save/Cancel triggers.
-4. **Application Settings Screen:** Management options for cache clearing, scan reset, verified metadata export, and verification behavior.
+4. **Application Settings Screen:** Management options for cache clearing, scan reset, and verification behavior.
 
 ---
 
