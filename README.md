@@ -6,7 +6,7 @@
 > discovered tracks, and lets the user play real files stored on the device.
 
 **Android releases:** https://github.com/Nathan-is-in-CS/Harmony/releases
-**Demo video:** `docs/demo.mp4` (add when available)
+**Demo video:** Soon!
 **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University
 **Author:** Nathan-is-in-Cs
 
