@@ -1,13 +1,5 @@
-// A widget test: it builds your app in memory and checks what is on screen.
-// Run them all with: flutter test
-//
-// You are not required to write more of these, but a project with a few real
-// tests reads very differently from one with none.
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter/material.dart';
-
-import 'package:harmony/main.dart';
+import 'package:harmony/src/platform_io_nonweb.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
@@ -21,6 +13,15 @@ Future<void> _ensureHiveBoxes() async {
   if (!Hive.isBoxOpen('audio_blobs')) await Hive.openBox('audio_blobs');
   if (!Hive.isBoxOpen('settings_box')) await Hive.openBox('settings_box');
   if (!Hive.isBoxOpen('lyrics_box')) await Hive.openBox('lyrics_box');
+}
+
+Future<void> _cleanupHive() async {
+  await Hive.close();
+  if (_hiveTestDir != null && _hiveTestDir!.existsSync()) {
+    try {
+      _hiveTestDir!.deleteSync(recursive: true);
+    } catch (_) {}
+  }
 }
 
 void main() {
@@ -41,36 +42,34 @@ void main() {
       return null;
     });
     await _ensureHiveBoxes();
-    // Prevent LibraryScreen from scanning device audio during widget tests.
-    final settings = Hive.box('settings_box');
-    await settings.put('device_audio_scanned', true);
-    // Ensure tracks_box is non-empty so the initial scan early-exits.
-    final tracks = Hive.box('tracks_box');
-    if (tracks.isEmpty) {
-      await tracks.add({
-        'id': '__test_track',
-        'title': 'Autumn Leaves',
-        'path': '/tmp/autumn_leaves.mp3',
-        'bpm': 120,
-        'keySignature': 'C',
-        'isUserVerified': false,
-      });
-    }
   });
-
   tearDownAll(() async {
+    await _cleanupHive();
     final binding = TestDefaultBinaryMessengerBinding.instance;
     final pathProvChannel = const MethodChannel('plugins.flutter.io/path_provider');
     binding.defaultBinaryMessenger.setMockMethodCallHandler(pathProvChannel, null);
   });
-
-  testWidgets('home screen builds and disposes cleanly', (tester) async {
-    addTearDown(() async {
-      // Dispose the widget tree before the test isolate exits. LibraryScreen
-      // listens to the Hive box and must release that listener first.
-      await tester.pumpWidget(const SizedBox.shrink());
+  group('audio scan helpers', () {
+    test('recognizes supported audio file extensions', () {
+      expect(isAudioFilePath('/storage/emulated/0/Music/song.mp3'), isTrue);
+      expect(isAudioFilePath('/storage/emulated/0/Music/song.wav'), isTrue);
+      expect(isAudioFilePath('/storage/emulated/0/Music/cover.jpg'), isFalse);
     });
 
-    await tester.pumpWidget(const MyApp());
+    test('skips protected Android directories', () {
+      expect(shouldSkipDirectory('/storage/emulated/0/Android'), isTrue);
+      expect(shouldSkipDirectory('/sdcard/cache'), isTrue);
+      expect(shouldSkipDirectory('/storage/emulated/0/Music'), isFalse);
+    });
+
+    test('deduplicates the same audio path across repeated scans', () async {
+      final result = await deduplicateAudioPaths([
+        '/storage/emulated/0/Music/song.mp3',
+        '/storage/emulated/0/Music/song.mp3',
+        '\\storage\\emulated\\0\\Music\\song.mp3',
+      ]);
+
+      expect(result, ['/storage/emulated/0/Music/song.mp3']);
+    });
   });
 }

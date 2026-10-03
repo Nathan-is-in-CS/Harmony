@@ -5,17 +5,18 @@ mockup shows what it looks like.
 
 ## Mockup
 
-Put your mockup images or PDF in `assets/` and embed them here, one heading per
-screen.
+The mockup and wireframes are included in this `docs/` folder as delivered.
+Open the PDF to review the full set of phone-screen mockups:
 
-_(Embed your mockup here once it is in `assets/`.)_
+- [High-level mockup (PDF)](High-level%20mockup%20Of%20Harmony.pdf)
+
+Individual screens are also available as image exports inside the PDF.
 
 ## Wireframes
 
-Your earlier box-and-label sketches and the screen flow: which screen opens
-first, and how a user moves between them. Photos of paper are fine.
-
-_(Embed your flow diagram and sketches here once they are in `assets/`.)_
+Wireframes and flow are included in the mockup PDF above. The app opens to the
+Track Library screen, from which the user selects a track to open the Player
+workspace. Calibration and settings are accessible from the Player and App bar.
 
 ## Screens
 
